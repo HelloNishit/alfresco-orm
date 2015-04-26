@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="sampleorm:samplemodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Sample of ORM Framework Model</description>
+	<version>1.0</version>
+
+	<imports>
+		<import prefix="d" uri="http://www.alfresco.org/model/dictionary/1.0" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+	</imports>
+
+	<namespaces>
+		<namespace prefix="sampleorm" uri="http://alfresco.orm.com" />
+	</namespaces>
+	<!-- ==================== CONSTRAINTS ==================== -->
+	<constraints>
+		<constraint name="sampleorm:languages" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>English</value>
+					<value>Spanish</value>
+					<value>French</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
+	<!-- ==================== Types ==================== -->
+	<types>
+		<type name="sampleorm:sampleType">
+			<title>Sample Type</title>
+			<parent>cm:content</parent>
+			<properties>
+				<property name="sampleorm:sampleString">
+					<title>Sample String in type</title>
+					<type>d:text</type>
+				</property>
+				<property name="sampleorm:sampleInt">
+					<title>Sample int in type</title>
+					<type>d:int</type>
+				</property>
+				<property name="sampleorm:sampleFloat">
+					<title>Sample float in type</title>
+					<type>d:float</type>
+				</property>
+				<property name="sampleorm:language">
+					<title>Sample Language Constraint in type</title>
+					<type>d:text</type>
+					<default>English</default>
+					<constraints>
+						<constraint ref="sampleorm:languages" />
+					</constraints>
+				</property>
+			</properties>
+		</type>
+	</types>
+	<!-- ==================== Aspects ==================== -->
+	<aspects>
+		<aspect name="sampleorm:sampleAspect">
+			<title>Sample Aspect</title>
+			<properties>
+				<property name="sampleorm:sampleStringAspect">
+					<title>Sample String in type</title>
+					<type>d:text</type>
+				</property>
+				<property name="sampleorm:sampleIntAspect">
+					<title>Sample int in type</title>
+					<type>d:int</type>
+				</property>
+				<property name="sampleorm:sampleFloatAspect">
+					<title>Sample float in type</title>
+					<type>d:float</type>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+</model>

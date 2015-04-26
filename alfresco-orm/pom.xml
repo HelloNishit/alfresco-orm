@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.alfresco</groupId>
+	<artifactId>alfresco-orm</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>orm</name>
+	<url>http://maven.apache.org</url>
+	<repositories>
+		<repository>
+			<id>maven.alfresco.com</id>
+			<name>Alfresco Maven Repository</name>
+			<url>http://maven.alfresco.com/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+
+
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Defines the alfresco edition to compile against. Allowed values are [org.alfresco|org.alfresco.enterprise]--> 
+        <alfresco.groupId>org.alfresco</alfresco.groupId>
+        <!-- Defines the alfresco version to compile against -->
+        <alfresco.version>4.2.f</alfresco.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- This will import the dependencyManagement for all artifacts in the 
+				selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
+				NOTE: You still need to define dependencies in your POM, but you can omit 
+				version as it's enforced by this dependencyManagement. NOTE: It defaults 
+				to the latest version this SDK pom has been tested with, but alfresco version 
+				can/should be overridden in your project's pom -->
+			<dependency>
+				<groupId>${alfresco.groupId}</groupId>
+				<artifactId>alfresco-platform-distribution</artifactId>
+				<version>${alfresco.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>${alfresco.groupId}</groupId>
+			<artifactId>alfresco-repository</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
