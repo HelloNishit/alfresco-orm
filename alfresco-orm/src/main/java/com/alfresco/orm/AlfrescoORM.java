@@ -17,9 +17,15 @@ package com.alfresco.orm;
 /**
  * 
  * @author Nishit C.
- *
+ * 
  */
-public interface AlfrescoORM {
+public interface AlfrescoORM
+{
+
+	/**
+	 * @return the nodeUUID
+	 */
+	public String getNodeUUID();
 
 	/**
 	 * @return the name

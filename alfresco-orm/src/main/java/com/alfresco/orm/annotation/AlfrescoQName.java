@@ -14,12 +14,20 @@
  *******************************************************************************/
 package com.alfresco.orm.annotation;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * 
  * @author Nishit C.
- *
+ * 
  */
-public @interface AlfrescoQName {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface AlfrescoQName
+{
 	/**
 	 * Annotation property for alfresco namespace url
 	 * 

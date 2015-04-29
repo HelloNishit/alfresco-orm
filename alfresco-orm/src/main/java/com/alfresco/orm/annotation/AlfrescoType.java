@@ -46,13 +46,6 @@ public @interface AlfrescoType {
 	 * 
 	 * @return
 	 */
-	String getParentFolderMethodName() default "";
-
-	/**
-	 * Annotation property for setting Qname
-	 * 
-	 * @return
-	 */
-	AlfrescoQName alfrescoQName();
+	String getParentFolderMethodName() default "";	
 
 }

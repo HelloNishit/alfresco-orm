@@ -32,9 +32,7 @@ public class SessionFactory implements BeanFactoryAware {
 	public synchronized Session getSession() {
 		// TODO: Find batter way to use Session object, check ThreadLocal if we
 		// can use
-		Session session = new Session();
-		session.setServiceRegistry(serviceRegistry);
-		session.setBeanFactory(beanFactory);
+		Session session = new Session(beanFactory,serviceRegistry);
 		return session;
 	}
 

@@ -32,5 +32,10 @@ public class ORMException extends Exception {
 	public ORMException(String message, Throwable cause) {
 		super(message, cause);
 	}
+	
+	
+	public ORMException(Throwable cause) {
+		super(cause);
+	}
 
 }
