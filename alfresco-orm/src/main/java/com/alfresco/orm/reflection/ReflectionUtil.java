@@ -20,43 +20,48 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.alfresco.orm.AlfrescoORM;
+
 /**
  * 
  * @author Nishit C.
  *
  */
-public abstract class ReflectionUtil {
+public abstract class ReflectionUtil
+{
 
-	public static Method getMethod(Class<? extends AlfrescoORM> type,
-			String fieldName) {
+	public static Method getMethod(Class<? extends AlfrescoORM> type, String fieldName)
+	{
 		Method methods[] = type.getDeclaredMethods();
 		Method retMethod = null;
-		for (Method method : methods) {
-			if (method.getName().equalsIgnoreCase("get" + fieldName)
-					|| method.getName().equalsIgnoreCase("is" + fieldName)) {
+		for (Method method : methods)
+		{
+			if (method.getName().equalsIgnoreCase("get" + fieldName) || method.getName().equalsIgnoreCase("is" + fieldName))
+			{
 				retMethod = method;
 				break;
 			}
 		}
-		if (retMethod == null) {
-			if (type.getSuperclass() != null) {
-				if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass())) {
-					retMethod = getMethod(
-							(Class<? extends AlfrescoORM>) type.getSuperclass(),
-							fieldName);
+		if (retMethod == null)
+		{
+			if (type.getSuperclass() != null)
+			{
+				if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass()))
+				{
+					retMethod = getMethod((Class<? extends AlfrescoORM>) type.getSuperclass(), fieldName);
 				}
 			}
 		}
 		return retMethod;
 	}
 
-	public static void getFields(Class<? extends AlfrescoORM> type,
-			List<Field> fields) {
+	public static void getFields(Class<? extends AlfrescoORM> type, List<Field> fields)
+	{
 		fields.addAll(Arrays.asList(type.getDeclaredFields()));
-		if (type.getSuperclass() != null) {
-			if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass())) {
-				getFields((Class<? extends AlfrescoORM>) type.getSuperclass(),
-						fields);
+		if (type.getSuperclass() != null)
+		{
+			if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass()))
+			{
+				getFields((Class<? extends AlfrescoORM>) type.getSuperclass(), fields);
 			}
 		}
 	}

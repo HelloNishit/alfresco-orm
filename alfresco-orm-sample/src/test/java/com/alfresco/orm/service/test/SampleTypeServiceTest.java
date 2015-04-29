@@ -14,15 +14,14 @@
  *******************************************************************************/
 package com.alfresco.orm.service.test;
 
-
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
+import junit.framework.Assert;
+
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -46,45 +45,48 @@ import com.tradeshift.test.remote.RemoteTestRunner;
  *
  */
 @RunWith(RemoteTestRunner.class)
-@Remote(runnerClass=SpringJUnit4ClassRunner.class)
+@Remote(runnerClass = SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:alfresco/application-context.xml")
-public class SampleTypeServiceTest {
-    
-    private static final String ADMIN_USER_NAME = "admin";
+public class SampleTypeServiceTest
+{
 
-    static Logger log = Logger.getLogger(SampleTypeServiceTest.class);
+	private static final String	ADMIN_USER_NAME	= "admin";
 
-    @Autowired
-    protected SampleTypeService sampleTypeService;
-    
-    @Autowired
-    @Qualifier("NodeService")
-    protected NodeService nodeService;
-    
-    @Test
-    public void testWiring() {
-        assertNotNull(sampleTypeService);
-    }
-    
-    @Test
-    public void tesstCreateSampleType() throws JsonGenerationException, JsonMappingException, IOException
-    {
-    	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
-    	SampleTypeExample1 sampleTypeExample1 = new SampleTypeExample1() ;
-    	sampleTypeExample1.setDescription("Description");
-    	sampleTypeExample1.setLanguage("English");
-    	sampleTypeExample1.setName("Name");
-    	sampleTypeExample1.setSampleFloat(0.11f);
-    	sampleTypeExample1.setSampleInt(5);
-    	sampleTypeExample1.setSampleString("String");
-    	SampleAspect sanpleAspect = new SampleAspect() ;    	
-    	sampleTypeExample1.setSampleAspect(sanpleAspect);
-    	sanpleAspect.setSampleFloatAspect(0.55f);
-    	sanpleAspect.setSampleIntAspect(1);
-    	sanpleAspect.setSampleStringAspect("Test Aspect");
-    	SampleTypeExample1 retObj = (SampleTypeExample1) sampleTypeService.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
-    	NodeRef nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, retObj.getNodeUUID()) ;
-    	assertNotNull(nodeRef);
-    }
+	static Logger				log				= Logger.getLogger(SampleTypeServiceTest.class);
+
+	@Autowired
+	protected SampleTypeService	sampleTypeService;
+
+	@Autowired
+	@Qualifier("NodeService")
+	protected NodeService		nodeService;
+
+	@Test
+	public void testWiring()
+	{
+		assertNotNull(sampleTypeService);
+	}
+
+	@Test
+	public void tesstCreateSampleType() throws JsonGenerationException, JsonMappingException, IOException
+	{
+		AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+		SampleTypeExample1 sampleTypeExample1 = new SampleTypeExample1();
+		sampleTypeExample1.setDescription("Description");
+		sampleTypeExample1.setLanguage("English");
+		sampleTypeExample1.setName("Name");
+		sampleTypeExample1.setSampleFloat(0.11f);
+		sampleTypeExample1.setSampleInt(5);
+		sampleTypeExample1.setSampleString("String");
+		SampleAspect sanpleAspect = new SampleAspect();
+		sampleTypeExample1.setSampleAspect(sanpleAspect);
+		sanpleAspect.setSampleFloatAspect(0.55f);
+		sanpleAspect.setSampleIntAspect(1);
+		sanpleAspect.setSampleStringAspect("Test Aspect");
+		SampleTypeExample1 retObj = (SampleTypeExample1) sampleTypeService
+				.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
+		assertNotNull(retObj.getNodeUUID());
+		Assert.assertEquals(sampleTypeExample1.getSampleString(), retObj.getSampleString());
+	}
 
 }

@@ -65,15 +65,15 @@ public abstract class ORMUtil
 			List<String> restrictedPropertiesForUpdate) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ORMException
 	{
 		NodeRef nodeRef = getNodeRef(alfrescoORM);
-		Map<QName, Serializable> propertiesFinal = new HashMap<QName, Serializable>(properties.size()) ;
-		for(Entry<QName, Serializable> prop : properties.entrySet())
+		Map<QName, Serializable> propertiesFinal = new HashMap<QName, Serializable>(properties.size());
+		for (Entry<QName, Serializable> prop : properties.entrySet())
 		{
-			if(!restrictedPropertiesForUpdate.contains(prop.getKey().getLocalName()))
+			if (!restrictedPropertiesForUpdate.contains(prop.getKey().getLocalName()))
 			{
-				propertiesFinal.put(prop.getKey(), prop.getValue()) ;
+				propertiesFinal.put(prop.getKey(), prop.getValue());
 			}
 		}
-		
+
 		nodeService.setProperties(nodeRef, properties);
 	}
 

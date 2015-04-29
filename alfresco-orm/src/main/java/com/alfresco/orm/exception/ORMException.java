@@ -13,28 +13,32 @@
  * limitations under the License.
  *******************************************************************************/
 package com.alfresco.orm.exception;
+
 /**
  * 
  * @author Nishit C.
  *
  */
-public class ORMException extends Exception {
+public class ORMException extends Exception
+{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2236619569885172331L;
+	private static final long	serialVersionUID	= 2236619569885172331L;
 
-	public ORMException(String message) {
+	public ORMException(final String message)
+	{
 		super(message);
 	}
 
-	public ORMException(String message, Throwable cause) {
+	public ORMException(final String message, final Throwable cause)
+	{
 		super(message, cause);
 	}
-	
-	
-	public ORMException(Throwable cause) {
+
+	public ORMException(final Throwable cause)
+	{
 		super(cause);
 	}
 

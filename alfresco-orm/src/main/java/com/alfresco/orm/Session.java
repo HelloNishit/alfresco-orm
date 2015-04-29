@@ -33,14 +33,13 @@ public class Session
 	private UpdateHelper	updateHelper;
 	private DeleteHelper	deleteHelper;
 
-	public Session(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	public Session(final BeanFactory beanFactory, final ServiceRegistry serviceRegistry)
 	{
 		this.createHelper = new CreateHelper(beanFactory, serviceRegistry);
-		this.updateHelper = new UpdateHelper(beanFactory, serviceRegistry) ;
-		this.deleteHelper = new DeleteHelper(beanFactory, serviceRegistry) ;
+		this.updateHelper = new UpdateHelper(beanFactory, serviceRegistry);
+		this.deleteHelper = new DeleteHelper(beanFactory, serviceRegistry);
 		this.serviceRegistry = serviceRegistry;
 		this.beanFactory = beanFactory;
-		
 	}
 
 	public void save(final AlfrescoORM alfrescoORM) throws ORMException

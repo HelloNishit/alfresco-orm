@@ -4,7 +4,6 @@
 package com.alfresco.orm.vo;
 
 import com.alfresco.orm.annotation.AlfrescoQName;
-import com.alfresco.orm.annotation.Property;
 
 /**
  * @author Nishit C.
@@ -12,11 +11,11 @@ import com.alfresco.orm.annotation.Property;
  */
 public class SampleAspect
 {
-	@Property(alfrescoQName = @AlfrescoQName(localName = "sampleStringAspect", namespaceURI = "http://alfresco.orm.com"))
+	@AlfrescoQName(localName = "sampleStringAspect", namespaceURI = "http://alfresco.orm.com")
 	private String	sampleStringAspect;
-	@Property(alfrescoQName = @AlfrescoQName(localName = "sampleIntAspect", namespaceURI = "http://alfresco.orm.com"))
+	@AlfrescoQName(localName = "sampleIntAspect", namespaceURI = "http://alfresco.orm.com")
 	private int		sampleIntAspect;
-	@Property(alfrescoQName = @AlfrescoQName(localName = "sampleFloatAspect", namespaceURI = "http://alfresco.orm.com"))
+	@AlfrescoQName(localName = "sampleFloatAspect", namespaceURI = "http://alfresco.orm.com")
 	private float	sampleFloatAspect;
 
 	/**

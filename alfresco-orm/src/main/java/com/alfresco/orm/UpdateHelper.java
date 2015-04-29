@@ -16,7 +16,7 @@ public class UpdateHelper
 {
 	private BeanFactory		beanFactory;
 	private ServiceRegistry	serviceRegistry;
-	private List<String>	restrictedPropertiesForUpdate	= Arrays.asList("node-uuid","creator", "created", "modifier", "modified");
+	private List<String>	restrictedPropertiesForUpdate	= Arrays.asList("node-uuid", "creator", "created", "modifier", "modified");
 
 	public UpdateHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
 	{
@@ -29,7 +29,7 @@ public class UpdateHelper
 		try
 		{
 			Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoORM);
-			ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(),restrictedPropertiesForUpdate);
+			ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
 			ORMUtil.executeCustomeMethodForProperty(alfrescoORM, beanFactory);
 		} catch (IllegalArgumentException e)
 		{

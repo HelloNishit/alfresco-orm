@@ -26,7 +26,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface AlfrescoType {
+public @interface AlfrescoType
+{
 	SpringBeanID springBeanID();
 
 	/**
@@ -46,6 +47,6 @@ public @interface AlfrescoType {
 	 * 
 	 * @return
 	 */
-	String getParentFolderMethodName() default "";	
+	String getParentFolderMethodName() default "";
 
 }

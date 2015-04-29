@@ -13,7 +13,7 @@ public interface SampleTypeService
 {
 	public AlfrescoORM createSampleType(String json);
 
-	public void updateSampleType(String json);
+	public AlfrescoORM updateSampleType(String json);
 
 	public void deleteSampleType(String json);
 

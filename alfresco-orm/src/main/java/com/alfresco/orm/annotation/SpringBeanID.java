@@ -13,12 +13,14 @@
  * limitations under the License.
  *******************************************************************************/
 package com.alfresco.orm.annotation;
+
 /**
  * 
  * @author Nishit C.
  *
  */
-public @interface SpringBeanID {
+public @interface SpringBeanID
+{
 	/**
 	 * Spring bean id that having above custom method
 	 * 

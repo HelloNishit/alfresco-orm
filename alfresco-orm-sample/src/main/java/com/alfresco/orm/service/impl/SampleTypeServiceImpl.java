@@ -48,9 +48,9 @@ public class SampleTypeServiceImpl implements SampleTypeService
 		Session session = sessionFactory.getSession();
 		try
 		{
-			SampleTypeExample1 retObj = new ObjectMapper().readValue(json, SampleTypeExample1.class) ;
+			SampleTypeExample1 retObj = new ObjectMapper().readValue(json, SampleTypeExample1.class);
 			session.save(retObj);
-			return retObj ;
+			return retObj;
 		} catch (JsonParseException e)
 		{
 			e.printStackTrace();
@@ -78,9 +78,31 @@ public class SampleTypeServiceImpl implements SampleTypeService
 	 * .String)
 	 */
 	@Override
-	public void updateSampleType(final String json)
+	public AlfrescoORM updateSampleType(final String json)
 	{
-		throw new NotImplementedException();
+		Session session = sessionFactory.getSession();
+		try
+		{
+			SampleTypeExample1 retObj = new ObjectMapper().readValue(json, SampleTypeExample1.class);
+			session.update(retObj);
+			return retObj;
+		} catch (JsonParseException e)
+		{
+			e.printStackTrace();
+		} catch (JsonMappingException e)
+		{
+			e.printStackTrace();
+		} catch (ORMException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			session.close();
+		}
+		return null;
 	}
 
 	/*

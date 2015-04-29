@@ -25,21 +25,24 @@ import org.springframework.beans.factory.BeanFactoryAware;
  * @author Nishit C.
  *
  */
-public class SessionFactory implements BeanFactoryAware {
-	private ServiceRegistry serviceRegistry;
-	private BeanFactory beanFactory;
+public class SessionFactory implements BeanFactoryAware
+{
+	private ServiceRegistry	serviceRegistry;
+	private BeanFactory		beanFactory;
 
-	public synchronized Session getSession() {
+	public synchronized Session getSession()
+	{
 		// TODO: Find batter way to use Session object, check ThreadLocal if we
 		// can use
-		Session session = new Session(beanFactory,serviceRegistry);
+		Session session = new Session(beanFactory, serviceRegistry);
 		return session;
 	}
 
 	/**
 	 * @return the serviceRegistry
 	 */
-	public ServiceRegistry getServiceRegistry() {
+	public ServiceRegistry getServiceRegistry()
+	{
 		return serviceRegistry;
 	}
 
@@ -47,11 +50,13 @@ public class SessionFactory implements BeanFactoryAware {
 	 * @param serviceRegistry
 	 *            the serviceRegistry to set
 	 */
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+	public void setServiceRegistry(ServiceRegistry serviceRegistry)
+	{
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException
+	{
 		this.beanFactory = beanFactory;
 
 	}

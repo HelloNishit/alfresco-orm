@@ -6,23 +6,24 @@ package com.alfresco.orm.vo;
 import com.alfresco.orm.annotation.AlfrescoAspect;
 import com.alfresco.orm.annotation.AlfrescoQName;
 import com.alfresco.orm.annotation.AlfrescoType;
-import com.alfresco.orm.annotation.Property;
 import com.alfresco.orm.annotation.SpringBeanID;
 
 /**
  * @author Nishit C.
  *
  */
-@AlfrescoType(alfrescoQName = @AlfrescoQName(localName = "sampleType", namespaceURI = "http://alfresco.orm.com"), springBeanID = @SpringBeanID(value = "sampleTypeService"), getParentFolderMethodName = "getParentContentForSmapleType")
-public class SampleTypeExample1 extends AlfrescoVO
+
+@AlfrescoType(springBeanID = @SpringBeanID(value = "sampleTypeService"), getParentFolderMethodName = "getParentContentForSmapleType")
+@AlfrescoQName(localName = "sampleType", namespaceURI = "http://alfresco.orm.com")
+public class SampleTypeExample1 extends AlfrescoContent
 {
-	@Property(alfrescoQName = @AlfrescoQName(localName = "sampleString", namespaceURI = "http://alfresco.orm.com"))
+	@AlfrescoQName(localName = "sampleString", namespaceURI = "http://alfresco.orm.com")
 	private String			sampleString;
-	@Property(alfrescoQName = @AlfrescoQName(localName = "sampleInt", namespaceURI = "http://alfresco.orm.com"))
+	@AlfrescoQName(localName = "sampleInt", namespaceURI = "http://alfresco.orm.com")
 	private int				sampleInt;
-	@Property(alfrescoQName = @AlfrescoQName(localName = "sampleFloat", namespaceURI = "http://alfresco.orm.com"))
+	@AlfrescoQName(localName = "sampleFloat", namespaceURI = "http://alfresco.orm.com")
 	private float			sampleFloat;
-	@Property(alfrescoQName = @AlfrescoQName(localName = "language", namespaceURI = "http://alfresco.orm.com"))
+	@AlfrescoQName(localName = "language", namespaceURI = "http://alfresco.orm.com")
 	private String			language;
 
 	@AlfrescoAspect()

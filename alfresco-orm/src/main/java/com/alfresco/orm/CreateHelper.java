@@ -23,7 +23,7 @@ public class CreateHelper
 {
 	private BeanFactory		beanFactory;
 	private ServiceRegistry	serviceRegistry;
-	private List<String>	restrictedPropertiesForUpdate	= Arrays.asList("node-uuid","creator", "created", "modifier", "modified");
+	private List<String>	restrictedPropertiesForUpdate	= Arrays.asList("node-uuid", "creator", "created", "modifier", "modified");
 
 	public CreateHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
 	{
@@ -43,7 +43,7 @@ public class CreateHelper
 				AlfrescoContent alfrescoVO = (AlfrescoContent) alfrescoORM;
 				alfrescoVO.setNodeUUID(nodeRef.getId());
 				Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoORM);
-				ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(),restrictedPropertiesForUpdate);
+				ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
 				ORMUtil.executeCustomeMethodForProperty(alfrescoORM, beanFactory);
 			}
 		} catch (SecurityException e)
