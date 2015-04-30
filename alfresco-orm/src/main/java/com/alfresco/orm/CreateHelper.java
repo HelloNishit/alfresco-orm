@@ -17,15 +17,30 @@ import org.springframework.beans.factory.BeanFactory;
 import com.alfresco.orm.annotation.AlfrescoQName;
 import com.alfresco.orm.annotation.AlfrescoType;
 import com.alfresco.orm.exception.ORMException;
-import com.alfresco.orm.vo.AlfrescoContent;
+import com.alfresco.orm.mapping.AlfrescoContent;
 
 public class CreateHelper
 {
-	private BeanFactory		beanFactory;
-	private ServiceRegistry	serviceRegistry;
-	private List<String>	restrictedPropertiesForUpdate	= Arrays.asList("node-uuid", "creator", "created", "modifier", "modified");
+	private BeanFactory			beanFactory;
+	private ServiceRegistry		serviceRegistry;
+	private List<String>		restrictedPropertiesForUpdate	= Arrays.asList("node-uuid", "creator", "created", "modifier", "modified");
+	private static CreateHelper	createHelper;
 
-	public CreateHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	public static CreateHelper init(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	{
+		if (null == createHelper)
+		{
+			createHelper = new CreateHelper(beanFactory, serviceRegistry);
+		}
+		return createHelper;
+	}
+
+	public static CreateHelper getCreateHelper()
+	{
+		return createHelper;
+	}
+
+	private CreateHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
 	{
 		this.beanFactory = beanFactory;
 		this.serviceRegistry = serviceRegistry;
@@ -45,6 +60,7 @@ public class CreateHelper
 				Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoORM);
 				ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
 				ORMUtil.executeCustomeMethodForProperty(alfrescoORM, beanFactory);
+				ORMUtil.executeAssociation(alfrescoORM, beanFactory, serviceRegistry);
 			}
 		} catch (SecurityException e)
 		{

@@ -29,6 +29,11 @@ public class SessionFactory implements BeanFactoryAware
 {
 	private ServiceRegistry	serviceRegistry;
 	private BeanFactory		beanFactory;
+	
+	public void init()
+	{
+		initHelperClass();
+	}
 
 	public synchronized Session getSession()
 	{
@@ -36,6 +41,13 @@ public class SessionFactory implements BeanFactoryAware
 		// can use
 		Session session = new Session(beanFactory, serviceRegistry);
 		return session;
+	}
+	
+	public void initHelperClass()
+	{
+		CreateHelper.init(beanFactory, serviceRegistry) ;
+		UpdateHelper.init(beanFactory, serviceRegistry) ;
+		DeleteHelper.init(beanFactory, serviceRegistry) ;
 	}
 
 	/**

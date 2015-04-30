@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -18,8 +19,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.alfresco.orm.annotation.AlfrescoAspect;
+import com.alfresco.orm.annotation.AlfrescoAssociation;
 import com.alfresco.orm.annotation.AlfrescoQName;
-import com.alfresco.orm.annotation.CustomProperty;
+import com.alfresco.orm.annotation.SetProperty;
 import com.alfresco.orm.annotation.SpringBeanID;
 import com.alfresco.orm.exception.ORMException;
 import com.alfresco.orm.reflection.ReflectionUtil;
@@ -34,7 +36,7 @@ public abstract class ORMUtil
 		Map<QName, Serializable> retVal = new HashMap<QName, Serializable>(fields.size());
 		for (Field field : fields)
 		{
-			if (field.isAnnotationPresent(AlfrescoQName.class))
+			if (field.isAnnotationPresent(AlfrescoQName.class) && !field.isAnnotationPresent(AlfrescoAspect.class))
 			{
 				AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
 				QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
@@ -95,18 +97,51 @@ public abstract class ORMUtil
 		ReflectionUtil.getFields(alfrescoORM.getClass(), fields);
 		for (Field field : fields)
 		{
-			if (field.isAnnotationPresent(CustomProperty.class))
+			if (field.isAnnotationPresent(SetProperty.class))
 			{
-				CustomProperty customProperty = field.getAnnotation(CustomProperty.class);
-				if (StringUtils.isNotEmpty(customProperty.setPropertMethodName()))
+				SetProperty setProperty = field.getAnnotation(SetProperty.class);
+				if (StringUtils.isNotEmpty(setProperty.setPropertMethodName()))
 				{
-					Object target = getTargetServiceBean(customProperty.springBeanID(), beanFactory);
-					Method customeMethod = target.getClass().getMethod(customProperty.setPropertMethodName(), NodeRef.class, AlfrescoORM.class);
+					Object target = getTargetServiceBean(setProperty.springBeanID(), beanFactory);
+					Method customeMethod = target.getClass().getMethod(setProperty.setPropertMethodName(), NodeRef.class, AlfrescoORM.class);
 					customeMethod.invoke(target, nodeRef, alfrescoORM);
 				} else
 				{
 					throw new ORMException("Please set cutome method name to set property");
 				}
+			}
+		}
+	}
+
+	public static void executeAssociation(final AlfrescoORM alfrescoORM, BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+			throws ORMException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+	{
+		NodeRef nodeRef = getNodeRef(alfrescoORM);
+		List<Field> fields = new ArrayList<Field>();
+		ReflectionUtil.getFields(alfrescoORM.getClass(), fields);
+		for (Field field : fields)
+		{
+			if (field.isAnnotationPresent(AlfrescoAssociation.class))
+			{
+				AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
+				if (null == alfrescoQName)
+				{
+					throw new ORMException("please add alfresco quname aspect to the association");
+				}
+
+				Method method = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());
+				AlfrescoORM associationAlfrescoORM = (AlfrescoORM) method.invoke(alfrescoORM, Void.class);
+				if (StringUtils.isNotBlank(associationAlfrescoORM.getNodeUUID()))
+				{
+					UpdateHelper.getUpdateHelper().update(associationAlfrescoORM);
+				} else
+				{
+					CreateHelper.getCreateHelper().save(associationAlfrescoORM);
+					NodeRef associationNodeRef = getNodeRef(associationAlfrescoORM);
+					QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+					serviceRegistry.getNodeService().createAssociation(nodeRef, associationNodeRef, qName);
+				}
+
 			}
 		}
 	}

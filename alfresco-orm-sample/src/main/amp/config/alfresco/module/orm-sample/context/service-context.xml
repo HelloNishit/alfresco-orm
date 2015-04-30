@@ -25,7 +25,7 @@
         <property name="sessionFactory" ref="sessionFactoryORM" />
     </bean>
     
-    <bean id="sessionFactoryORM" class="com.alfresco.orm.SessionFactory">
+    <bean id="sessionFactoryORM" class="com.alfresco.orm.SessionFactory" init-method="init">
     	<property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
     

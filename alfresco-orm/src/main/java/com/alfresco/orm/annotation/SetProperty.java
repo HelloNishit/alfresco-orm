@@ -22,11 +22,11 @@ import java.lang.annotation.Target;
 /**
  * 
  * @author Nishit C.
- *
+ * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface CustomProperty
+public @interface SetProperty
 {
 	/**
 	 * Spring bean id that having above custom method

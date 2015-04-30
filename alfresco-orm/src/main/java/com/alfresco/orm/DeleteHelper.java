@@ -8,10 +8,26 @@ import com.alfresco.orm.exception.ORMException;
 
 public class DeleteHelper
 {
-	private BeanFactory		beanFactory;
-	private ServiceRegistry	serviceRegistry;
+	private BeanFactory			beanFactory;
+	private ServiceRegistry		serviceRegistry;
 
-	public DeleteHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	private static DeleteHelper	deleteHelper;
+
+	public static DeleteHelper init(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	{
+		if (null == deleteHelper)
+		{
+			deleteHelper = new DeleteHelper(beanFactory, serviceRegistry);
+		}
+		return deleteHelper;
+	}
+
+	public static DeleteHelper getDeleteHelper()
+	{
+		return deleteHelper;
+	}
+
+	private DeleteHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
 	{
 		this.beanFactory = beanFactory;
 		this.serviceRegistry = serviceRegistry;

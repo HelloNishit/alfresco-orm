@@ -14,11 +14,27 @@ import com.alfresco.orm.exception.ORMException;
 
 public class UpdateHelper
 {
-	private BeanFactory		beanFactory;
-	private ServiceRegistry	serviceRegistry;
-	private List<String>	restrictedPropertiesForUpdate	= Arrays.asList("node-uuid", "creator", "created", "modifier", "modified");
+	private BeanFactory			beanFactory;
+	private ServiceRegistry		serviceRegistry;
+	private List<String>		restrictedPropertiesForUpdate	= Arrays.asList("node-uuid", "creator", "created", "modifier", "modified");
 
-	public UpdateHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	private static UpdateHelper	updateHelper;
+
+	public static UpdateHelper init(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	{
+		if (null == updateHelper)
+		{
+			updateHelper = new UpdateHelper(beanFactory, serviceRegistry);
+		}
+		return updateHelper;
+	}
+
+	public static UpdateHelper getUpdateHelper()
+	{
+		return updateHelper;
+	}
+
+	private UpdateHelper(BeanFactory beanFactory, ServiceRegistry serviceRegistry)
 	{
 		this.beanFactory = beanFactory;
 		this.serviceRegistry = serviceRegistry;
@@ -31,6 +47,7 @@ public class UpdateHelper
 			Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoORM);
 			ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
 			ORMUtil.executeCustomeMethodForProperty(alfrescoORM, beanFactory);
+			ORMUtil.executeAssociation(alfrescoORM, beanFactory, serviceRegistry);
 		} catch (IllegalArgumentException e)
 		{
 			throw new ORMException(e);

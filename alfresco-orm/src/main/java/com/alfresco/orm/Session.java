@@ -35,9 +35,9 @@ public class Session
 
 	public Session(final BeanFactory beanFactory, final ServiceRegistry serviceRegistry)
 	{
-		this.createHelper = new CreateHelper(beanFactory, serviceRegistry);
-		this.updateHelper = new UpdateHelper(beanFactory, serviceRegistry);
-		this.deleteHelper = new DeleteHelper(beanFactory, serviceRegistry);
+		this.createHelper = CreateHelper.getCreateHelper();
+		this.updateHelper = UpdateHelper.getUpdateHelper();
+		this.deleteHelper = DeleteHelper.getDeleteHelper();
 		this.serviceRegistry = serviceRegistry;
 		this.beanFactory = beanFactory;
 	}
