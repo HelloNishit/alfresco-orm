@@ -65,8 +65,6 @@
 						<many>true</many>
 					</target>
 				</association>
-			</associations>
-			<associations>
 				<association name="sampleorm:SampleType_associated_with_sampleType2">
 					<title>SampleType_associated_with_sampleType2</title>
 					<source>
@@ -80,11 +78,9 @@
 					</target>
 				</association>
 			</associations>
-				
+
 		</type>
-	</types>
-	
-	<types>
+
 		<type name="sampleorm:sampleType1">
 			<title>Sample Type</title>
 			<parent>cm:content</parent>
@@ -99,9 +95,7 @@
 				</property>
 			</properties>
 		</type>
-	</types>
-	
-	<types>
+
 		<type name="sampleorm:sampleType2">
 			<title>Sample Type</title>
 			<parent>cm:content</parent>

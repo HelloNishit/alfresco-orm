@@ -1,3 +1,17 @@
+/*******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package com.alfresco.orm;
 
 import java.io.Serializable;
@@ -5,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +51,7 @@ public abstract class ORMUtil
 		Map<QName, Serializable> retVal = new HashMap<QName, Serializable>(fields.size());
 		for (Field field : fields)
 		{
-			if (field.isAnnotationPresent(AlfrescoQName.class) && !field.isAnnotationPresent(AlfrescoAspect.class))
+			if (field.isAnnotationPresent(AlfrescoQName.class) && !field.isAnnotationPresent(AlfrescoAssociation.class))
 			{
 				AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
 				QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
@@ -63,8 +78,9 @@ public abstract class ORMUtil
 	 * @throws InvocationTargetException
 	 * @throws ORMException
 	 */
-	public static void saveProperties(final AlfrescoORM alfrescoORM, final Map<QName, Serializable> properties, NodeService nodeService,
-			List<String> restrictedPropertiesForUpdate) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ORMException
+	public static void saveProperties(final AlfrescoORM alfrescoORM, final Map<QName, Serializable> properties, final NodeService nodeService,
+			final List<String> restrictedPropertiesForUpdate) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+			ORMException
 	{
 		NodeRef nodeRef = getNodeRef(alfrescoORM);
 		Map<QName, Serializable> propertiesFinal = new HashMap<QName, Serializable>(properties.size());
@@ -89,7 +105,7 @@ public abstract class ORMUtil
 	 * @throws InvocationTargetException
 	 * @throws ORMException
 	 */
-	public static void executeCustomeMethodForProperty(final AlfrescoORM alfrescoORM, BeanFactory beanFactory) throws SecurityException,
+	public static void executeCustomeMethodForProperty(final AlfrescoORM alfrescoORM, final BeanFactory beanFactory) throws SecurityException,
 			NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, ORMException
 	{
 		NodeRef nodeRef = getNodeRef(alfrescoORM);
@@ -113,7 +129,7 @@ public abstract class ORMUtil
 		}
 	}
 
-	public static void executeAssociation(final AlfrescoORM alfrescoORM, BeanFactory beanFactory, ServiceRegistry serviceRegistry)
+	public static void executeAssociation(final AlfrescoORM alfrescoORM, final BeanFactory beanFactory, final ServiceRegistry serviceRegistry)
 			throws ORMException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
 		NodeRef nodeRef = getNodeRef(alfrescoORM);
@@ -128,22 +144,46 @@ public abstract class ORMUtil
 				{
 					throw new ORMException("please add alfresco quname aspect to the association");
 				}
-
-				Method method = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());
-				AlfrescoORM associationAlfrescoORM = (AlfrescoORM) method.invoke(alfrescoORM, Void.class);
-				if (StringUtils.isNotBlank(associationAlfrescoORM.getNodeUUID()))
+				List<AlfrescoORM> associationAlfrescoORMs = getAsscoiationObject(alfrescoORM, field);
+				for (AlfrescoORM associationAlfrescoORM : associationAlfrescoORMs)
 				{
-					UpdateHelper.getUpdateHelper().update(associationAlfrescoORM);
-				} else
-				{
-					CreateHelper.getCreateHelper().save(associationAlfrescoORM);
-					NodeRef associationNodeRef = getNodeRef(associationAlfrescoORM);
-					QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
-					serviceRegistry.getNodeService().createAssociation(nodeRef, associationNodeRef, qName);
+					if (StringUtils.isNotBlank(associationAlfrescoORM.getNodeUUID()))
+					{
+						UpdateHelper.getUpdateHelper().update(associationAlfrescoORM);
+					} else
+					{
+						CreateHelper.getCreateHelper().save(associationAlfrescoORM);
+						NodeRef associationNodeRef = getNodeRef(associationAlfrescoORM);
+						QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+						serviceRegistry.getNodeService().createAssociation(nodeRef, associationNodeRef, qName);
+					}
 				}
 
 			}
 		}
+	}
+
+	/**
+	 * @param alfrescoORM
+	 * @param field
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
+	private static List<AlfrescoORM> getAsscoiationObject(final AlfrescoORM alfrescoORM, final Field field) throws IllegalAccessException,
+			InvocationTargetException
+	{
+		List<AlfrescoORM> retVal = new ArrayList<AlfrescoORM>();
+		AlfrescoAssociation alfrescoAssociation = field.getAnnotation(AlfrescoAssociation.class);
+		Method method = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());
+		if (alfrescoAssociation.many())
+		{
+			retVal.addAll((Collection<? extends AlfrescoORM>) method.invoke(alfrescoORM));
+		} else
+		{
+			retVal.add((AlfrescoORM) method.invoke(alfrescoORM));
+		}
+		return retVal;
 	}
 
 	/**
@@ -161,7 +201,7 @@ public abstract class ORMUtil
 	 * @return
 	 * @throws ORMException
 	 */
-	public static Object getTargetServiceBean(final SpringBeanID springBeanID, BeanFactory beanFactory) throws ORMException
+	public static Object getTargetServiceBean(final SpringBeanID springBeanID, final BeanFactory beanFactory) throws ORMException
 	{
 		String springBeanId = springBeanID.value();
 		if (StringUtils.isEmpty(springBeanId))

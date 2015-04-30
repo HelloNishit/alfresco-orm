@@ -129,7 +129,7 @@ public class AlfrescoContent implements AlfrescoORM
 	 * @param creator
 	 *            the creator to set
 	 */
-	public void setCreator(String creator)
+	public void setCreator(final String creator)
 	{
 		this.creator = creator;
 	}
@@ -146,7 +146,7 @@ public class AlfrescoContent implements AlfrescoORM
 	 * @param createdDate
 	 *            the createdDate to set
 	 */
-	public void setCreatedDate(Date createdDate)
+	public void setCreatedDate(final Date createdDate)
 	{
 		this.createdDate = createdDate;
 	}
@@ -163,7 +163,7 @@ public class AlfrescoContent implements AlfrescoORM
 	 * @param modifier
 	 *            the modifier to set
 	 */
-	public void setModifier(String modifier)
+	public void setModifier(final String modifier)
 	{
 		this.modifier = modifier;
 	}
@@ -180,7 +180,7 @@ public class AlfrescoContent implements AlfrescoORM
 	 * @param modifiedDate
 	 *            the modifiedDate to set
 	 */
-	public void setModifiedDate(Date modifiedDate)
+	public void setModifiedDate(final Date modifiedDate)
 	{
 		this.modifiedDate = modifiedDate;
 	}

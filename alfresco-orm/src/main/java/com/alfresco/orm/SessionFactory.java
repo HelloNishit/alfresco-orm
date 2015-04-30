@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-
 package com.alfresco.orm;
 
 import org.alfresco.service.ServiceRegistry;
@@ -29,7 +28,7 @@ public class SessionFactory implements BeanFactoryAware
 {
 	private ServiceRegistry	serviceRegistry;
 	private BeanFactory		beanFactory;
-	
+
 	public void init()
 	{
 		initHelperClass();
@@ -42,12 +41,12 @@ public class SessionFactory implements BeanFactoryAware
 		Session session = new Session(beanFactory, serviceRegistry);
 		return session;
 	}
-	
+
 	public void initHelperClass()
 	{
-		CreateHelper.init(beanFactory, serviceRegistry) ;
-		UpdateHelper.init(beanFactory, serviceRegistry) ;
-		DeleteHelper.init(beanFactory, serviceRegistry) ;
+		CreateHelper.init(beanFactory, serviceRegistry);
+		UpdateHelper.init(beanFactory, serviceRegistry);
+		DeleteHelper.init(beanFactory, serviceRegistry);
 	}
 
 	/**
@@ -62,12 +61,12 @@ public class SessionFactory implements BeanFactoryAware
 	 * @param serviceRegistry
 	 *            the serviceRegistry to set
 	 */
-	public void setServiceRegistry(ServiceRegistry serviceRegistry)
+	public void setServiceRegistry(final ServiceRegistry serviceRegistry)
 	{
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException
+	public void setBeanFactory(final BeanFactory beanFactory) throws BeansException
 	{
 		this.beanFactory = beanFactory;
 

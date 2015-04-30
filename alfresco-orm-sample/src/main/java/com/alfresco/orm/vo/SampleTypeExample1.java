@@ -1,3 +1,17 @@
+/*******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 /**
  * 
  */
@@ -11,7 +25,6 @@ import com.alfresco.orm.annotation.AlfrescoQName;
 import com.alfresco.orm.annotation.AlfrescoType;
 import com.alfresco.orm.annotation.SpringBeanID;
 import com.alfresco.orm.mapping.AlfrescoContent;
-import com.alfresco.orm.vo.SampleAspect;
 
 /**
  * @author Nishit C.
@@ -31,9 +44,11 @@ public class SampleTypeExample1 extends AlfrescoContent
 	@AlfrescoQName(localName = "language", namespaceURI = "http://alfresco.orm.com")
 	private String				language;
 
-	@AlfrescoAssociation(many=true)
+	@AlfrescoAssociation(many = true)
+	@AlfrescoQName(localName = "SampleType_associated_with_sampleType1", namespaceURI = "http://alfresco.orm.com")
 	private List<SampleType1>	sampleType1;
-	@AlfrescoAssociation(many=false)
+	@AlfrescoAssociation(many = false)
+	@AlfrescoQName(localName = "SampleType_associated_with_sampleType2", namespaceURI = "http://alfresco.orm.com")
 	private SampleType2			sampleType2;
 
 	@AlfrescoAspect()
@@ -136,7 +151,7 @@ public class SampleTypeExample1 extends AlfrescoContent
 	 * @param sampleType1
 	 *            the sampleType1 to set
 	 */
-	public void setSampleType1(List<SampleType1> sampleType1)
+	public void setSampleType1(final List<SampleType1> sampleType1)
 	{
 		this.sampleType1 = sampleType1;
 	}
@@ -153,7 +168,7 @@ public class SampleTypeExample1 extends AlfrescoContent
 	 * @param sampleType2
 	 *            the sampleType2 to set
 	 */
-	public void setSampleType2(SampleType2 sampleType2)
+	public void setSampleType2(final SampleType2 sampleType2)
 	{
 		this.sampleType2 = sampleType2;
 	}

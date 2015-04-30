@@ -29,7 +29,7 @@ import com.alfresco.orm.AlfrescoORM;
 public abstract class ReflectionUtil
 {
 
-	public static Method getMethod(Class<? extends AlfrescoORM> type, String fieldName)
+	public static Method getMethod(final Class<? extends AlfrescoORM> type, final String fieldName)
 	{
 		Method methods[] = type.getDeclaredMethods();
 		Method retMethod = null;
@@ -54,7 +54,7 @@ public abstract class ReflectionUtil
 		return retMethod;
 	}
 
-	public static void getFields(Class<? extends AlfrescoORM> type, List<Field> fields)
+	public static void getFields(final Class<? extends AlfrescoORM> type, final List<Field> fields)
 	{
 		fields.addAll(Arrays.asList(type.getDeclaredFields()));
 		if (type.getSuperclass() != null)
