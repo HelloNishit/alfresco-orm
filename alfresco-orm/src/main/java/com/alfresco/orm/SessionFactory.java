@@ -47,6 +47,7 @@ public class SessionFactory implements BeanFactoryAware
 		CreateHelper.init(beanFactory, serviceRegistry);
 		UpdateHelper.init(beanFactory, serviceRegistry);
 		DeleteHelper.init(beanFactory, serviceRegistry);
+		ObjectFillHelper.init(beanFactory, serviceRegistry);
 	}
 
 	/**

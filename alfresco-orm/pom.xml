@@ -21,10 +21,11 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Defines the alfresco edition to compile against. Allowed values are [org.alfresco|org.alfresco.enterprise]--> 
-        <alfresco.groupId>org.alfresco</alfresco.groupId>
-        <!-- Defines the alfresco version to compile against -->
-        <alfresco.version>4.2.f</alfresco.version>
+		<!-- Defines the alfresco edition to compile against. Allowed values are 
+			[org.alfresco|org.alfresco.enterprise] -->
+		<alfresco.groupId>org.alfresco</alfresco.groupId>
+		<!-- Defines the alfresco version to compile against -->
+		<alfresco.version>4.2.f</alfresco.version>
 	</properties>
 
 	<dependencyManagement>

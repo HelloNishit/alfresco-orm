@@ -75,6 +75,7 @@ public class SampleTypeServiceTest
 	public void tesstCreateSampleType() throws JsonGenerationException, JsonMappingException, IOException
 	{
 		AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+
 		SampleTypeExample1 sampleTypeExample1 = new SampleTypeExample1();
 		sampleTypeExample1.setDescription("Description");
 		sampleTypeExample1.setLanguage("English");
@@ -120,6 +121,7 @@ public class SampleTypeServiceTest
 				.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
 		assertNotNull(retObj.getNodeUUID());
 		Assert.assertEquals(sampleTypeExample1.getSampleString(), retObj.getSampleString());
+
 	}
 
 }

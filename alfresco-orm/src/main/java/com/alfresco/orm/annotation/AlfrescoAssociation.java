@@ -19,14 +19,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.alfresco.orm.AlfrescoORM;
+
 /**
  * 
  * @author Nishit C.
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target({ ElementType.FIELD })
 public @interface AlfrescoAssociation
-{	
+{
 	boolean many();
+
+	Class<? extends AlfrescoORM> type();
 }

@@ -53,6 +53,31 @@ public abstract class ReflectionUtil
 		}
 		return retMethod;
 	}
+	
+	public static Method setMethod(final Class<? extends AlfrescoORM> type, final String fieldName)
+	{
+		Method methods[] = type.getDeclaredMethods();
+		Method retMethod = null;
+		for (Method method : methods)
+		{
+			if (method.getName().equalsIgnoreCase("set" + fieldName))
+			{
+				retMethod = method;
+				break;
+			}
+		}
+		if (retMethod == null)
+		{
+			if (type.getSuperclass() != null)
+			{
+				if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass()))
+				{
+					retMethod = getMethod((Class<? extends AlfrescoORM>) type.getSuperclass(), fieldName);
+				}
+			}
+		}
+		return retMethod;
+	}
 
 	public static void getFields(final Class<? extends AlfrescoORM> type, final List<Field> fields)
 	{

@@ -15,7 +15,10 @@
 
 package com.alfresco.orm;
 
+import java.util.List;
+
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.alfresco.orm.exception.ORMException;
@@ -55,6 +58,11 @@ public class Session
 	public void delete(final AlfrescoORM alfrescoORM) throws ORMException
 	{
 		deleteHelper.delete(alfrescoORM);
+	}
+
+	public void fillObject(final List<NodeRef> nodeRef, final List<? extends AlfrescoORM> alfrescoORM)
+	{
+
 	}
 
 	/**
