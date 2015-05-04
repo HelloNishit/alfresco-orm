@@ -15,6 +15,7 @@
 
 package com.alfresco.orm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.alfresco.service.ServiceRegistry;
@@ -30,17 +31,19 @@ import com.alfresco.orm.exception.ORMException;
  */
 public class Session
 {
-	private BeanFactory		beanFactory;
-	private ServiceRegistry	serviceRegistry;
-	private CreateHelper	createHelper;
-	private UpdateHelper	updateHelper;
-	private DeleteHelper	deleteHelper;
+	private BeanFactory			beanFactory;
+	private ServiceRegistry		serviceRegistry;
+	private CreateHelper		createHelper;
+	private UpdateHelper		updateHelper;
+	private DeleteHelper		deleteHelper;
+	private ObjectFillHelper	objectFillHelper;
 
 	public Session(final BeanFactory beanFactory, final ServiceRegistry serviceRegistry)
 	{
 		this.createHelper = CreateHelper.getCreateHelper();
 		this.updateHelper = UpdateHelper.getUpdateHelper();
 		this.deleteHelper = DeleteHelper.getDeleteHelper();
+		objectFillHelper = ObjectFillHelper.getObjectFillHelper();
 		this.serviceRegistry = serviceRegistry;
 		this.beanFactory = beanFactory;
 	}
@@ -60,9 +63,26 @@ public class Session
 		deleteHelper.delete(alfrescoORM);
 	}
 
-	public void fillObject(final List<NodeRef> nodeRef, final List<? extends AlfrescoORM> alfrescoORM)
+	public <T extends AlfrescoORM> List<T> fillObject(final List<NodeRef> nodeRefs, Class<T> classType) throws ORMException
 	{
-
+		List<T> retVAl = new ArrayList<T>();
+		T orm;
+		try
+		{
+			for (NodeRef nodeRef : nodeRefs)
+			{
+				orm = classType.newInstance();
+				objectFillHelper.getFilledObject(nodeRef, orm);
+				retVAl.add(orm);
+			}
+		} catch (InstantiationException e)
+		{
+			throw new ORMException(e.getMessage(),e);
+		} catch (IllegalAccessException e)
+		{
+			throw new ORMException(e.getMessage(),e);
+		}
+		return retVAl;
 	}
 
 	/**

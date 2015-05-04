@@ -72,7 +72,7 @@ public abstract class ReflectionUtil
 			{
 				if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass()))
 				{
-					retMethod = getMethod((Class<? extends AlfrescoORM>) type.getSuperclass(), fieldName);
+					retMethod = setMethod((Class<? extends AlfrescoORM>) type.getSuperclass(), fieldName);
 				}
 			}
 		}

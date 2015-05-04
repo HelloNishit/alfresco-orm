@@ -18,6 +18,8 @@
 package com.alfresco.orm.service.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.alfresco.repo.nodelocator.NodeLocatorService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -36,7 +38,7 @@ import com.alfresco.orm.vo.SampleTypeExample1;
 
 /**
  * @author Nishit C.
- *
+ * 
  */
 public class SampleTypeServiceImpl implements SampleTypeService
 {
@@ -140,9 +142,27 @@ public class SampleTypeServiceImpl implements SampleTypeService
 	 * .String)
 	 */
 	@Override
-	public void searchSampleType(final String json)
+	public AlfrescoORM fetchData(NodeRef nodeRef)
 	{
-		throw new NotImplementedException();
+		Session session = sessionFactory.getSession();
+		try
+		{
+			List<SampleTypeExample1> sampleTypeExample1s ;
+			try
+			{
+				sampleTypeExample1s = session.fillObject(Arrays.asList(new NodeRef[] { nodeRef }), SampleTypeExample1.class);
+				return sampleTypeExample1s.get(0);
+			} catch (ORMException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+
+		} finally
+		{
+			session.close();
+		}
 	}
 
 	/**

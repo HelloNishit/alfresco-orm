@@ -17,11 +17,13 @@
  */
 package com.alfresco.orm.service;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+
 import com.alfresco.orm.AlfrescoORM;
 
 /**
  * @author Nishit C.
- *
+ * 
  */
 public interface SampleTypeService
 {
@@ -31,6 +33,6 @@ public interface SampleTypeService
 
 	public void deleteSampleType(String json);
 
-	public void searchSampleType(String json);
+	public AlfrescoORM fetchData(NodeRef nodeRef);
 
 }

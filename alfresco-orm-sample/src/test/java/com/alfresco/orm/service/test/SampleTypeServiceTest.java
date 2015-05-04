@@ -23,7 +23,10 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.namespace.QName;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -46,7 +49,7 @@ import com.tradeshift.test.remote.RemoteTestRunner;
 /**
  * 
  * @author Nishit C.
- *
+ * 
  */
 @RunWith(RemoteTestRunner.class)
 @Remote(runnerClass = SpringJUnit4ClassRunner.class)
@@ -65,6 +68,10 @@ public class SampleTypeServiceTest
 	@Qualifier("NodeService")
 	protected NodeService		nodeService;
 
+	SampleTypeExample1			afterCreateObj	= null;
+	SampleTypeExample1			afterUpdateObj	= null;
+	SampleTypeExample1			afterSearchObj	= null;
+
 	@Test
 	public void testWiring()
 	{
@@ -72,14 +79,14 @@ public class SampleTypeServiceTest
 	}
 
 	@Test
-	public void tesstCreateSampleType() throws JsonGenerationException, JsonMappingException, IOException
+	public void testCreateSampleType() throws JsonGenerationException, JsonMappingException, IOException
 	{
 		AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
 
 		SampleTypeExample1 sampleTypeExample1 = new SampleTypeExample1();
 		sampleTypeExample1.setDescription("Description");
 		sampleTypeExample1.setLanguage("English");
-		sampleTypeExample1.setName("Name");
+		sampleTypeExample1.setName("Name" + System.currentTimeMillis());
 		sampleTypeExample1.setSampleFloat(0.11f);
 		sampleTypeExample1.setSampleInt(5);
 		sampleTypeExample1.setSampleString("String");
@@ -101,9 +108,9 @@ public class SampleTypeServiceTest
 		sampleType1s.add(sampleType1);
 		sampleType1 = new SampleType1();
 		sampleType1.setName("sampleType11" + System.currentTimeMillis());
-		sampleType1.setTitle("sampletype1->title");
-		sampleType1.setSampleString11("sampleType1->SampleString11");
-		sampleType1.setSampleString12("sampleType1->sampleString12");
+		sampleType1.setTitle("sampleType11->title");
+		sampleType1.setSampleString11("sampleType11->SampleString11");
+		sampleType1.setSampleString12("sampleType11->sampleString12");
 		sampleType1s.add(sampleType1);
 		sampleTypeExample1.setSampleType1(sampleType1s);
 
@@ -114,14 +121,62 @@ public class SampleTypeServiceTest
 		sampleType2.setSampleString22("sampleType2->sampleString22");
 		sampleTypeExample1.setSampleType2(sampleType2);
 
-		System.out.println("----------------------------------------------------");
-		System.out.println(new ObjectMapper().writeValueAsString(sampleTypeExample1));
-		System.out.println("----------------------------------------------------");
-		SampleTypeExample1 retObj = (SampleTypeExample1) sampleTypeService
-				.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
-		assertNotNull(retObj.getNodeUUID());
-		Assert.assertEquals(sampleTypeExample1.getSampleString(), retObj.getSampleString());
+		afterCreateObj = (SampleTypeExample1) sampleTypeService.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
+		assertData(afterCreateObj);
+		testUpdateSampleType() ;
+		testFetchData() ;
+	}
 
+	
+	public void testUpdateSampleType() throws JsonGenerationException, JsonMappingException, IOException
+	{
+		afterCreateObj.setSampleString("update setSampleString");
+		afterCreateObj.getSampleType1().get(0).setSampleString11("update setSampleString11");
+		afterCreateObj.getSampleType1().get(1).setSampleString12("update setSampleString12");
+		afterCreateObj.getSampleType2().setSampleString22("update setSampleString22");
+		AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+		afterUpdateObj = (SampleTypeExample1) sampleTypeService.updateSampleType(new ObjectMapper().writeValueAsString(afterCreateObj));
+		assertData(afterUpdateObj);
+	}
+
+	
+	public void testFetchData() throws JsonGenerationException, JsonMappingException, IOException
+	{
+		AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+		afterSearchObj = (SampleTypeExample1) sampleTypeService.fetchData(new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, afterCreateObj
+				.getNodeUUID()));
+		assertData(afterSearchObj);
+	}
+
+	/**
+	 * 
+	 */
+	private void assertData(SampleTypeExample1 assertObject)
+	{
+		assertNotNull(assertObject.getNodeUUID());
+		NodeRef sampleTypeExample1NodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, assertObject.getNodeUUID());
+		// @AlfrescoQName(localName = "sampleString", namespaceURI =
+		// "http://alfresco.orm.com")
+		Assert.assertEquals(nodeService.getProperties(sampleTypeExample1NodeRef).get(QName.createQName("http://alfresco.orm.com", "sampleString")),
+				assertObject.getSampleString());
+
+		// @AlfrescoQName(localName = "sampleString11", namespaceURI =
+		// "http://alfresco.orm.com")
+		NodeRef SampleType1NodeRef1 = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, assertObject.getSampleType1().get(0).getNodeUUID());
+		Assert.assertEquals(nodeService.getProperties(SampleType1NodeRef1).get(QName.createQName("http://alfresco.orm.com", "sampleString11")),
+				assertObject.getSampleType1().get(0).getSampleString11());
+
+		// @AlfrescoQName(localName = "sampleString12", namespaceURI =
+		// "http://alfresco.orm.com")
+		NodeRef SampleType1NodeRef2 = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, assertObject.getSampleType1().get(1).getNodeUUID());
+		Assert.assertEquals(nodeService.getProperties(SampleType1NodeRef2).get(QName.createQName("http://alfresco.orm.com", "sampleString12")),
+				assertObject.getSampleType1().get(1).getSampleString12());
+
+		// @AlfrescoQName(localName = "sampleString22", namespaceURI =
+		// "http://alfresco.orm.com")
+		NodeRef SampleType2NodeRef1 = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, assertObject.getSampleType2().getNodeUUID());
+		Assert.assertEquals(nodeService.getProperties(SampleType2NodeRef1).get(QName.createQName("http://alfresco.orm.com", "sampleString22")),
+				assertObject.getSampleType2().getSampleString22());
 	}
 
 }

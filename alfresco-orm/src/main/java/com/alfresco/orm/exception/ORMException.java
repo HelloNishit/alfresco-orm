@@ -37,9 +37,4 @@ public class ORMException extends Exception
 		super(message, cause);
 	}
 
-	public ORMException(final Throwable cause)
-	{
-		super(cause);
-	}
-
 }

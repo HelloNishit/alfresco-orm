@@ -47,7 +47,7 @@ public class SampleTypeExample1 extends AlfrescoContent
 	@AlfrescoAssociation(many = true, type = SampleType1.class)
 	@AlfrescoQName(localName = "SampleType_associated_with_sampleType1", namespaceURI = "http://alfresco.orm.com")
 	private List<SampleType1>	sampleType1;
-	@AlfrescoAssociation(many = false, type = SampleType1.class)
+	@AlfrescoAssociation(many = false, type = SampleType2.class)
 	@AlfrescoQName(localName = "SampleType_associated_with_sampleType2", namespaceURI = "http://alfresco.orm.com")
 	private SampleType2			sampleType2;
 

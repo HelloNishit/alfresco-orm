@@ -27,7 +27,7 @@ import com.alfresco.orm.reflection.ReflectionUtil;
 
 /**
  * @author Nishit C.
- *
+ * 
  */
 public class ObjectFillHelper
 {
@@ -46,7 +46,7 @@ public class ObjectFillHelper
 		return objectFillHelper;
 	}
 
-	public static ObjectFillHelper getCreateHelper()
+	public static ObjectFillHelper getObjectFillHelper()
 	{
 		return objectFillHelper;
 	}
@@ -69,72 +69,119 @@ public class ObjectFillHelper
 		List<Field> fields = new ArrayList<Field>();
 		ReflectionUtil.getFields(alfrescoORM.getClass(), fields);
 
-		try
+		for (Field field : fields)
 		{
-			for (Field field : fields)
+			if (field.isAnnotationPresent(AlfrescoQName.class) && !field.isAnnotationPresent(AlfrescoAssociation.class))
 			{
-				if (field.isAnnotationPresent(AlfrescoQName.class) && !field.isAnnotationPresent(AlfrescoAssociation.class))
+				AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
+				QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+				Method setterMethod = ReflectionUtil.setMethod(alfrescoORM.getClass(), field.getName());
+				if (setterMethod.getParameterTypes().length == 0 || setterMethod.getParameterTypes().length > 1)
 				{
-					AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
-					QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
-					Method setterMethod = ReflectionUtil.setMethod(alfrescoORM.getClass(), field.getName());
-					Class<?> classType = setterMethod.getParameterTypes()[0];
-					Serializable value = properties.get(qName);
+					throw new ORMException("invalid method found for this tool : " + setterMethod.getName());
+				}
+				Class<?> classType = setterMethod.getParameterTypes()[0];
+				Serializable value = properties.get(qName);
+				try
+				{
 					setterMethod.invoke(alfrescoORM, getManipulatedValue(classType, value));
-				} else if (field.isAnnotationPresent(AlfrescoAspect.class))
+				} catch (IllegalAccessException e)
 				{
-					Method setterMethod = ReflectionUtil.setMethod(alfrescoORM.getClass(), field.getName());
-					Class<?> classType = setterMethod.getParameterTypes()[0];
+					throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+				} catch (IllegalArgumentException e)
+				{
+					throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+				} catch (InvocationTargetException e)
+				{
+					throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+				}
+			} else if (field.isAnnotationPresent(AlfrescoAspect.class))
+			{
+				Method setterMethod = ReflectionUtil.setMethod(alfrescoORM.getClass(), field.getName());
+				if (setterMethod.getParameterTypes().length == 0 || setterMethod.getParameterTypes().length > 1)
+				{
+					throw new ORMException("invalid method found for this tool : " + setterMethod.getName());
+				}
+				Class<?> classType = setterMethod.getParameterTypes()[0];
+				try
+				{
 					getFilledObject(nodeRef, (AlfrescoORM) classType.newInstance());
-				} else if (field.isAnnotationPresent(AlfrescoAssociation.class))
+				} catch (InstantiationException e)
 				{
-					AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
-					if (null == alfrescoQName)
+					throw new ORMException(e.getMessage() + "class type: " + classType, e);
+				} catch (IllegalAccessException e)
+				{
+					throw new ORMException(e.getMessage() + "class type: " + classType, e);
+				}
+			} else if (field.isAnnotationPresent(AlfrescoAssociation.class))
+			{
+				AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
+				if (null == alfrescoQName)
+				{
+					throw new ORMException("please add alfresco quname aspect to the association");
+				}
+				QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+				AlfrescoAssociation alfrescoAssociation = field.getAnnotation(AlfrescoAssociation.class);
+				List<AssociationRef> associationRefs = nodeService.getTargetAssocs(nodeRef, qName);
+				List<AlfrescoORM> associationList = new ArrayList<AlfrescoORM>();
+				for (AssociationRef associationRef : associationRefs)
+				{
+					if (nodeService.exists(associationRef.getTargetRef()))
 					{
-						throw new ORMException("please add alfresco quname aspect to the association");
-					}
-					QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
-					AlfrescoAssociation alfrescoAssociation = field.getAnnotation(AlfrescoAssociation.class);
-					List<AssociationRef> associationRefs = nodeService.getTargetAssocs(nodeRef, qName);
-					List<AlfrescoORM> associationList = new ArrayList<AlfrescoORM>();
-					for (AssociationRef associationRef : associationRefs)
-					{
-						if (nodeService.exists(associationRef.getTargetRef()))
+						try
 						{
 							AlfrescoORM alfrescoORMForAssociation = alfrescoAssociation.type().newInstance();
 							associationList.add(alfrescoORMForAssociation);
 							getFilledObject(associationRef.getTargetRef(), alfrescoORMForAssociation);
-
-						} else
+						} catch (InstantiationException e)
 						{
-							// invalid association noderef found
+							throw new ORMException(e.getMessage() + "class type: " + alfrescoAssociation.type(), e);
+						} catch (IllegalAccessException e)
+						{
+							throw new ORMException(e.getMessage() + "class type: " + alfrescoAssociation.type(), e);
 						}
-					}
-					if (!associationList.isEmpty())
+
+					} else
 					{
-						Method setterMethod = ReflectionUtil.setMethod(alfrescoORM.getClass(), field.getName());
-						if (alfrescoAssociation.many())
+						// invalid association noderef found
+					}
+				}
+				if (!associationList.isEmpty())
+				{
+					Method setterMethod = ReflectionUtil.setMethod(alfrescoORM.getClass(), field.getName());
+					if (alfrescoAssociation.many())
+					{
+						try
 						{
 							setterMethod.invoke(alfrescoORM, associationList);
-						} else
+						} catch (IllegalArgumentException e)
+						{
+							throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+						} catch (IllegalAccessException e)
+						{
+							throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+						} catch (InvocationTargetException e)
+						{
+							throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+						}
+					} else
+					{
+						try
 						{
 							setterMethod.invoke(alfrescoORM, associationList.get(0));
+						} catch (IllegalArgumentException e)
+						{							
+							throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+						} catch (IllegalAccessException e)
+						{
+							throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
+						} catch (InvocationTargetException e)
+						{
+							throw new ORMException(e.getMessage() + " method : " + setterMethod, e);
 						}
 					}
 				}
 			}
-		} catch (IllegalAccessException e)
-		{
-			throw new ORMException(e);
-		} catch (IllegalArgumentException e)
-		{
-			throw new ORMException(e);
-		} catch (InvocationTargetException e)
-		{
-			throw new ORMException(e);
-		} catch (InstantiationException e)
-		{
-			throw new ORMException(e);
 		}
 
 	}

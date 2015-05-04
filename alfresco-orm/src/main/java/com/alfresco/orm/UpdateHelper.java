@@ -64,19 +64,19 @@ public class UpdateHelper
 			ORMUtil.executeAssociation(alfrescoORM, beanFactory, serviceRegistry);
 		} catch (IllegalArgumentException e)
 		{
-			throw new ORMException(e);
+			throw new ORMException(e.getMessage(),e);
 		} catch (SecurityException e)
 		{
-			throw new ORMException(e);
+			throw new ORMException(e.getMessage(),e);
 		} catch (IllegalAccessException e)
 		{
-			throw new ORMException(e);
+			throw new ORMException(e.getMessage(),e);
 		} catch (NoSuchMethodException e)
 		{
-			throw new ORMException(e);
+			throw new ORMException(e.getMessage(),e);
 		} catch (InvocationTargetException e)
 		{
-			throw new ORMException(e);
+			throw new ORMException(e.getMessage(),e);
 		}
 	}
 
