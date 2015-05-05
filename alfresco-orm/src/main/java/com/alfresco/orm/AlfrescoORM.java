@@ -28,6 +28,11 @@ public interface AlfrescoORM
 	public String getNodeUUID();
 
 	/**
+	 * @return the nodeUUID
+	 */
+	public void setNodeUUID(String nodeUUID);
+
+	/**
 	 * @return the name
 	 */
 	public String getName();

@@ -17,66 +17,47 @@
  */
 package com.alfresco.orm;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.aop.Advice;
 import org.springframework.aop.framework.ProxyFactory;
-import org.springframework.beans.factory.FactoryBean;
 
 /**
  * @author Nishit C.
- *
+ * 
  */
-public class LazyProxyFactoryBean<T extends AlfrescoORM> implements FactoryBean<T>
+public class LazyProxyFactoryBean
 {
-	private Class<T>				objectType;
-	private List<MethodInterceptor>	methodInterceptors	= new ArrayList<MethodInterceptor>();
+	private List<Class<? extends Advice>>	adviceList;
 
-	public LazyProxyFactoryBean(final Class<T> objectType)
+	private static LazyProxyFactoryBean		LAZY_PROXY_FACTORY_BEAN;
+
+	private LazyProxyFactoryBean()
 	{
-		this.objectType = objectType;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.beans.factory.FactoryBean#getObject()
-	 */
-	public T getObject() throws Exception
+	public static void init(List<Class<? extends Advice>> methodInterceptors)
 	{
-		T obj = objectType.newInstance() ;
+		LAZY_PROXY_FACTORY_BEAN = new LazyProxyFactoryBean();
+		LAZY_PROXY_FACTORY_BEAN.adviceList = methodInterceptors;
+	}
+
+	public static LazyProxyFactoryBean getLazyProxyFactoryBean()
+	{
+		return LAZY_PROXY_FACTORY_BEAN;
+	}
+
+	public <T extends AlfrescoORM> T getObject(String nodeUUID,Class<T> clasz) throws InstantiationException, IllegalAccessException
+	{
+		T obj = clasz.newInstance();
+		obj.setNodeUUID(nodeUUID);
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.setTarget(obj);
-		for (MethodInterceptor methodInterceptor : methodInterceptors) {
-            proxyFactory.addAdvice(methodInterceptor);
-        }
-		return (T) proxyFactory.getProxy() ;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.beans.factory.FactoryBean#getObjectType()
-	 */
-	public Class<?> getObjectType()
-	{
-		return objectType;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.beans.factory.FactoryBean#isSingleton()
-	 */
-	public boolean isSingleton()
-	{
-		return false;
-	}
-
-	public void setMethodInterceptors(final List<MethodInterceptor> methodInterceptors)
-	{
-		this.methodInterceptors = methodInterceptors;
+		for (Class<? extends Advice> methodInterceptorClass : adviceList)
+		{
+			proxyFactory.addAdvice(methodInterceptorClass.newInstance());
+		}
+		return (T) proxyFactory.getProxy();
 	}
 
 }

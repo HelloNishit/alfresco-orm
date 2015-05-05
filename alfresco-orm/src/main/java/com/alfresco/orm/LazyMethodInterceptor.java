@@ -17,25 +17,29 @@
  */
 package com.alfresco.orm;
 
-import java.lang.reflect.Method;
-
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 
 /**
  * @author Nishit C.
- *
+ * 
  */
 public class LazyMethodInterceptor implements MethodInterceptor
 {
+	private boolean	isLoaded	= false;
 
-	/* (non-Javadoc)
-	 * @see net.sf.cglib.proxy.MethodInterceptor#intercept(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], net.sf.cglib.proxy.MethodProxy)
-	 */
-	public Object intercept(final Object obj, final Method method, final Object[] args, final MethodProxy proxy) throws Throwable
-	{
-		// TODO Auto-generated method stub
-		return null;
+	public Object invoke(MethodInvocation invocation) throws Throwable
+	{	
+		if(isLoaded)
+		{
+			AlfrescoORM alfrescoORM = (AlfrescoORM) invocation.getThis();
+			NodeRef nodeRef = ORMUtil.getNodeRef(alfrescoORM);
+			ObjectFillHelper.getObjectFillHelper().getFilledObject(nodeRef, alfrescoORM, true);
+		}
+		Object retObject = invocation.proceed();
+		isLoaded = true;
+		return retObject;
 	}
 
 }

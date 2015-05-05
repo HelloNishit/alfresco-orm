@@ -14,7 +14,11 @@
  *******************************************************************************/
 package com.alfresco.orm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.alfresco.service.ServiceRegistry;
+import org.aopalliance.aop.Advice;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -22,7 +26,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 /**
  * 
  * @author Nishit C.
- *
+ * 
  */
 public class SessionFactory implements BeanFactoryAware
 {
@@ -48,6 +52,9 @@ public class SessionFactory implements BeanFactoryAware
 		UpdateHelper.init(beanFactory, serviceRegistry);
 		DeleteHelper.init(beanFactory, serviceRegistry);
 		ObjectFillHelper.init(beanFactory, serviceRegistry);
+		List<Class<? extends Advice>> c = new ArrayList<Class<? extends Advice>>();
+		c.add(LazyMethodInterceptor.class);
+		LazyProxyFactoryBean.init(c);
 	}
 
 	/**

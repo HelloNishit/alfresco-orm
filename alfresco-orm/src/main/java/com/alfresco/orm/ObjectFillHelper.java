@@ -71,7 +71,7 @@ public class ObjectFillHelper
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	public void getFilledObject(final NodeRef nodeRef, final AlfrescoORM alfrescoORM) throws ORMException
+	public void getFilledObject(final NodeRef nodeRef, final AlfrescoORM alfrescoORM,boolean isLazy) throws ORMException
 	{
 
 		NodeService nodeService = serviceRegistry.getNodeService();
@@ -119,7 +119,7 @@ public class ObjectFillHelper
 				Class<?> classType = setterMethod.getParameterTypes()[0];
 				try
 				{
-					getFilledObject(nodeRef, (AlfrescoORM) classType.newInstance());
+					getFilledObject(nodeRef, (AlfrescoORM) classType.newInstance(),isLazy);
 				} catch (InstantiationException e)
 				{
 					throw new ORMException(e.getMessage() + "class type: " + classType, e);
@@ -144,9 +144,18 @@ public class ObjectFillHelper
 					{
 						try
 						{
-							AlfrescoORM alfrescoORMForAssociation = alfrescoAssociation.type().newInstance();
+							AlfrescoORM alfrescoORMForAssociation = null ;
+							if(!isLazy)
+							{
+								alfrescoORMForAssociation = alfrescoAssociation.type().newInstance();								
+								getFilledObject(associationRef.getTargetRef(), alfrescoORMForAssociation,isLazy);
+							}
+							else
+							{
+								alfrescoORMForAssociation = LazyProxyFactoryBean.getLazyProxyFactoryBean().getObject(associationRef.getTargetRef().getId(),alfrescoAssociation.type()) ;
+							}
 							associationList.add(alfrescoORMForAssociation);
-							getFilledObject(associationRef.getTargetRef(), alfrescoORMForAssociation);
+							
 						} catch (InstantiationException e)
 						{
 							throw new ORMException(e.getMessage() + "class type: " + alfrescoAssociation.type(), e);

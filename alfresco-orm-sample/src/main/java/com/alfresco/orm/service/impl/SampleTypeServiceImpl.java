@@ -150,7 +150,7 @@ public class SampleTypeServiceImpl implements SampleTypeService
 			List<SampleTypeExample1> sampleTypeExample1s ;
 			try
 			{
-				sampleTypeExample1s = session.fillObject(Arrays.asList(new NodeRef[] { nodeRef }), SampleTypeExample1.class);
+				sampleTypeExample1s = session.fillObject(Arrays.asList(new NodeRef[] { nodeRef }), SampleTypeExample1.class,true);
 				return sampleTypeExample1s.get(0);
 			} catch (ORMException e)
 			{

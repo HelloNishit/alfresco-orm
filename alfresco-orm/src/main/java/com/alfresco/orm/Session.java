@@ -63,7 +63,7 @@ public class Session
 		deleteHelper.delete(alfrescoORM);
 	}
 
-	public <T extends AlfrescoORM> List<T> fillObject(final List<NodeRef> nodeRefs, Class<T> classType) throws ORMException
+	public <T extends AlfrescoORM> List<T> fillObject(final List<NodeRef> nodeRefs, Class<T> classType, boolean isLazy) throws ORMException
 	{
 		List<T> retVAl = new ArrayList<T>();
 		T orm;
@@ -72,15 +72,15 @@ public class Session
 			for (NodeRef nodeRef : nodeRefs)
 			{
 				orm = classType.newInstance();
-				objectFillHelper.getFilledObject(nodeRef, orm);
+				objectFillHelper.getFilledObject(nodeRef, orm, isLazy);
 				retVAl.add(orm);
 			}
 		} catch (InstantiationException e)
 		{
-			throw new ORMException(e.getMessage(),e);
+			throw new ORMException(e.getMessage(), e);
 		} catch (IllegalAccessException e)
 		{
-			throw new ORMException(e.getMessage(),e);
+			throw new ORMException(e.getMessage(), e);
 		}
 		return retVAl;
 	}
