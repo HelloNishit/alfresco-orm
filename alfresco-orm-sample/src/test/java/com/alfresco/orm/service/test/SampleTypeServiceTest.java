@@ -39,6 +39,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alfresco.orm.service.SampleTypeService;
+import com.alfresco.orm.service.impl.SampleTypeServiceImplRepo;
 import com.alfresco.orm.vo.SampleAspect;
 import com.alfresco.orm.vo.SampleType1;
 import com.alfresco.orm.vo.SampleType2;
@@ -63,6 +64,9 @@ public class SampleTypeServiceTest
 
 	@Autowired
 	protected SampleTypeService	sampleTypeService;
+	
+	@Autowired
+	protected SampleTypeServiceImplRepo sampleTypeServiceImplRepo ;
 
 	@Autowired
 	@Qualifier("NodeService")
@@ -76,6 +80,7 @@ public class SampleTypeServiceTest
 	public void testWiring()
 	{
 		assertNotNull(sampleTypeService);
+		assertNotNull(sampleTypeServiceImplRepo);		
 	}
 
 	@Test
@@ -121,7 +126,8 @@ public class SampleTypeServiceTest
 		sampleType2.setSampleString22("sampleType2->sampleString22");
 		sampleTypeExample1.setSampleType2(sampleType2);
 
-		afterCreateObj = (SampleTypeExample1) sampleTypeService.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
+		//afterCreateObj = (SampleTypeExample1) sampleTypeService.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
+		afterCreateObj = (SampleTypeExample1) sampleTypeServiceImplRepo.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1)) ;
 		assertData(afterCreateObj);
 		testUpdateSampleType() ;
 		testFetchData() ;

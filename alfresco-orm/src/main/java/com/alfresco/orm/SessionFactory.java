@@ -23,6 +23,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 
+import com.alfresco.orm.repository.AlfrescoRespositoryProxyFactoryBean;
+
 /**
  * 
  * @author Nishit C.
@@ -50,8 +52,9 @@ public class SessionFactory implements BeanFactoryAware
 	{
 		CreateHelper.init(beanFactory, serviceRegistry);
 		UpdateHelper.init(beanFactory, serviceRegistry);
-		DeleteHelper.init(beanFactory, serviceRegistry);
+		DeleteHelper.init(beanFactory, serviceRegistry);		
 		ObjectFillHelper.init(beanFactory, serviceRegistry);
+		AlfrescoRespositoryProxyFactoryBean.init(this);
 		List<Class<? extends Advice>> c = new ArrayList<Class<? extends Advice>>();
 		c.add(LazyMethodInterceptor.class);
 		LazyProxyFactoryBean.init(c);

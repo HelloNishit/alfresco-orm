@@ -3,6 +3,11 @@
  */
 package com.alfresco.orm.repository;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.alfresco.service.cmr.repository.NodeRef;
+
 import com.alfresco.orm.AlfrescoORM;
 import com.alfresco.orm.Session;
 import com.alfresco.orm.SessionFactory;
@@ -10,10 +15,11 @@ import com.alfresco.orm.exception.ORMException;
 
 /**
  * @author Nishit C.
- *
+ * 
  */
 public class AlfrescoRepositoryImpl<T extends AlfrescoORM> implements AlfrescoRespository<T>
 {
+	private Class<T>		declaredType;
 
 	private SessionFactory	sessionFactory;
 
@@ -27,8 +33,13 @@ public class AlfrescoRepositoryImpl<T extends AlfrescoORM> implements AlfrescoRe
 	public void save(final T t) throws ORMException
 	{
 		Session session = sessionFactory.getSession();
-		session.save(t);
-		session.close();
+		try
+		{
+			session.save(t);
+		} finally
+		{
+			session.close();
+		}
 
 	}
 
@@ -42,8 +53,13 @@ public class AlfrescoRepositoryImpl<T extends AlfrescoORM> implements AlfrescoRe
 	public void update(final T t) throws ORMException
 	{
 		Session session = sessionFactory.getSession();
-		session.update(t);
-		session.close();
+		try
+		{
+			session.update(t);
+		} finally
+		{
+			session.close();
+		}
 	}
 
 	/*
@@ -56,8 +72,40 @@ public class AlfrescoRepositoryImpl<T extends AlfrescoORM> implements AlfrescoRe
 	public void delete(final T t) throws ORMException
 	{
 		Session session = sessionFactory.getSession();
-		session.delete(t);
-		session.close();
+		try
+		{
+			session.delete(t);
+		} finally
+		{
+			session.close();
+		}
+	}
+
+	public T fillObject(NodeRef nodeRef, Class<T> clasz, boolean isLazy) throws ORMException
+	{
+		Session session = sessionFactory.getSession();
+		try
+		{
+			List<T> retData = session.fillObject(Arrays.asList(new NodeRef[] { nodeRef }), clasz, isLazy);
+			return retData.get(0);
+		} finally
+		{
+			session.close();
+		}
+	}
+	
+	public T fillObject(NodeRef nodeRef, boolean isLazy) throws ORMException
+	{
+		//TODO: need to test declaredType is working or not
+		Session session = sessionFactory.getSession();
+		try
+		{
+			List<T> retData = session.fillObject(Arrays.asList(new NodeRef[] { nodeRef }), declaredType, isLazy);
+			return retData.get(0);
+		} finally
+		{
+			session.close();
+		}
 	}
 
 	/**
@@ -75,6 +123,23 @@ public class AlfrescoRepositoryImpl<T extends AlfrescoORM> implements AlfrescoRe
 	public void setSessionFactory(final SessionFactory sessionFactory)
 	{
 		this.sessionFactory = sessionFactory;
+	}
+
+	/**
+	 * @return the declaredType
+	 */
+	public Class<T> getDeclaredType()
+	{
+		return declaredType;
+	}
+
+	/**
+	 * @param declaredType
+	 *            the declaredType to set
+	 */
+	public void setDeclaredType(Class<T> declaredType)
+	{
+		this.declaredType = declaredType;
 	}
 
 }

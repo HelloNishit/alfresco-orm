@@ -16,6 +16,7 @@ package com.alfresco.orm.reflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,12 +25,17 @@ import com.alfresco.orm.AlfrescoORM;
 /**
  * 
  * @author Nishit C.
- *
+ * 
  */
 public abstract class ReflectionUtil
 {
 
-	public static Method getMethod(final Class<? extends AlfrescoORM> type, final String fieldName)
+	public static String getPackageName(Object object)
+	{
+		return object.getClass().getPackage().getName();
+	}
+
+	public static Method getMethod(final Class type, final String fieldName)
 	{
 		Method methods[] = type.getDeclaredMethods();
 		Method retMethod = null;
@@ -47,14 +53,14 @@ public abstract class ReflectionUtil
 			{
 				if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass()))
 				{
-					retMethod = getMethod((Class<? extends AlfrescoORM>) type.getSuperclass(), fieldName);
+					retMethod = getMethod(type.getSuperclass(), fieldName);
 				}
 			}
 		}
 		return retMethod;
 	}
-	
-	public static Method setMethod(final Class<? extends AlfrescoORM> type, final String fieldName)
+
+	public static Method setMethod(final Class type, final String fieldName)
 	{
 		Method methods[] = type.getDeclaredMethods();
 		Method retMethod = null;
@@ -72,23 +78,42 @@ public abstract class ReflectionUtil
 			{
 				if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass()))
 				{
-					retMethod = setMethod((Class<? extends AlfrescoORM>) type.getSuperclass(), fieldName);
+					retMethod = setMethod(type.getSuperclass(), fieldName);
 				}
 			}
 		}
 		return retMethod;
 	}
 
-	public static void getFields(final Class<? extends AlfrescoORM> type, final List<Field> fields)
+	public static void getFields(final Class type, final List<Field> fields)
 	{
 		fields.addAll(Arrays.asList(type.getDeclaredFields()));
 		if (type.getSuperclass() != null)
 		{
 			if (AlfrescoORM.class.isAssignableFrom(type.getSuperclass()))
 			{
-				getFields((Class<? extends AlfrescoORM>) type.getSuperclass(), fields);
+				getFields(type.getSuperclass(), fields);
 			}
 		}
+	}
+
+	public static List<Method> setterMethodForAnnotation(Class type, Class annotationClass)
+	{
+		List<Method> retMethods = new ArrayList<Method>();
+		List<Field> fields = new ArrayList<Field>();
+		getFields(type, fields);
+		for (Field field : fields)
+		{
+			if (field.isAnnotationPresent(annotationClass))
+			{
+				Method method = setMethod(type, field.getName()) ;
+				if(null != method)
+				{
+					retMethods.add(method);
+				}
+			}
+		}
+		return retMethods;
 	}
 
 }
