@@ -8,16 +8,16 @@ import java.util.List;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 
-import com.alfresco.orm.AlfrescoORM;
 import com.alfresco.orm.Session;
 import com.alfresco.orm.SessionFactory;
 import com.alfresco.orm.exception.ORMException;
+import com.alfresco.orm.mapping.AlfrescoContent;
 
 /**
  * @author Nishit C.
  * 
  */
-public class AlfrescoRepositoryImpl<T extends AlfrescoORM> implements AlfrescoRespository<T>
+public class AlfrescoRepositoryImpl<T extends AlfrescoContent> implements AlfrescoRespository<T>
 {
 	private Class<T>		declaredType;
 

@@ -22,6 +22,8 @@ import java.util.List;
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.framework.ProxyFactory;
 
+import com.alfresco.orm.mapping.AlfrescoContent;
+
 /**
  * @author Nishit C.
  * 
@@ -47,7 +49,7 @@ public class LazyProxyFactoryBean
 		return LAZY_PROXY_FACTORY_BEAN;
 	}
 
-	public <T extends AlfrescoORM> T getObject(String nodeUUID,Class<T> clasz) throws InstantiationException, IllegalAccessException
+	public <T extends AlfrescoContent> T getObject(String nodeUUID,Class<T> clasz) throws InstantiationException, IllegalAccessException
 	{
 		T obj = clasz.newInstance();
 		obj.setNodeUUID(nodeUUID);

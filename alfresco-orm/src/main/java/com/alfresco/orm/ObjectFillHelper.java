@@ -37,6 +37,7 @@ import com.alfresco.orm.annotation.AlfrescoAspect;
 import com.alfresco.orm.annotation.AlfrescoAssociation;
 import com.alfresco.orm.annotation.AlfrescoQName;
 import com.alfresco.orm.exception.ORMException;
+import com.alfresco.orm.mapping.AlfrescoContent;
 import com.alfresco.orm.reflection.ReflectionUtil;
 
 /**
@@ -137,14 +138,14 @@ public class ObjectFillHelper
 				QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
 				AlfrescoAssociation alfrescoAssociation = field.getAnnotation(AlfrescoAssociation.class);
 				List<AssociationRef> associationRefs = nodeService.getTargetAssocs(nodeRef, qName);
-				List<AlfrescoORM> associationList = new ArrayList<AlfrescoORM>();
+				List<AlfrescoContent> associationList = new ArrayList<AlfrescoContent>();
 				for (AssociationRef associationRef : associationRefs)
 				{
 					if (nodeService.exists(associationRef.getTargetRef()))
 					{
 						try
 						{
-							AlfrescoORM alfrescoORMForAssociation = null ;
+							AlfrescoContent alfrescoORMForAssociation = null ;
 							if(!isLazy)
 							{
 								alfrescoORMForAssociation = alfrescoAssociation.type().newInstance();								

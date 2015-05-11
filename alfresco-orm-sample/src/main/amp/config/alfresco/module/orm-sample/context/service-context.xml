@@ -11,8 +11,7 @@
 	OF ANY KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
 <beans>
-
-	<!-- A simple module component that will be executed once -->
+	
 	<bean id="sampleTypeService" class="com.alfresco.orm.service.impl.SampleTypeServiceImpl">
 		<property name="nodeService" ref="NodeService" />
 		<property name="nodeLocatorService" ref="nodeLocatorService" />
@@ -23,5 +22,15 @@
 		init-method="init">
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
+	
+	<bean id="sampleTypeServiceImplRepo" class="com.alfresco.orm.service.impl.SampleTypeServiceImplRepo">
+		<property name="nodeService" ref="NodeService" />
+		<property name="nodeLocatorService" ref="nodeLocatorService" />
+		<property name="sessionFactory" ref="sessionFactoryORM" />
+	</bean>
+	
+	
+	
+	<import resource="classpath:/alfresco-orm-context.xml"/>
 
 </beans>

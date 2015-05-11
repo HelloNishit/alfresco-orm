@@ -21,6 +21,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import com.alfresco.orm.mapping.AlfrescoContent;
+
 /**
  * @author Nishit C.
  * 
@@ -33,9 +35,9 @@ public class LazyMethodInterceptor implements MethodInterceptor
 	{	
 		if(isLoaded)
 		{
-			AlfrescoORM alfrescoORM = (AlfrescoORM) invocation.getThis();
-			NodeRef nodeRef = ORMUtil.getNodeRef(alfrescoORM);
-			ObjectFillHelper.getObjectFillHelper().getFilledObject(nodeRef, alfrescoORM, true);
+			AlfrescoContent alfrescoContent = (AlfrescoContent) invocation.getThis();
+			NodeRef nodeRef = ORMUtil.getNodeRef(alfrescoContent);
+			ObjectFillHelper.getObjectFillHelper().getFilledObject(nodeRef, alfrescoContent, true);
 		}
 		Object retObject = invocation.proceed();
 		isLoaded = true;

@@ -19,7 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.alfresco.orm.AlfrescoORM;
+import com.alfresco.orm.mapping.AlfrescoContent;
 
 /**
  * 
@@ -32,5 +32,5 @@ public @interface AlfrescoAssociation
 {
 	boolean many();
 
-	Class<? extends AlfrescoORM> type();
+	Class<? extends AlfrescoContent> type();
 }

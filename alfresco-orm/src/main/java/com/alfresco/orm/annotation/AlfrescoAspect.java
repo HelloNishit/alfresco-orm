@@ -14,13 +14,20 @@
  *******************************************************************************/
 package com.alfresco.orm.annotation;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Alfresco Aspect annotation to add non mandatory aspect to the alfresco
  * content
  * 
  * @author nishit.charania
- *
+ * 
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
 public @interface AlfrescoAspect
 {
 

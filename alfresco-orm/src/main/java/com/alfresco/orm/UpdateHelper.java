@@ -25,6 +25,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.alfresco.orm.exception.ORMException;
+import com.alfresco.orm.mapping.AlfrescoContent;
 
 public class UpdateHelper
 {
@@ -54,14 +55,14 @@ public class UpdateHelper
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	public void update(final AlfrescoORM alfrescoORM) throws ORMException
+	public void update(final AlfrescoContent alfrescoContent) throws ORMException
 	{
 		try
 		{
-			Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoORM);
-			ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
-			ORMUtil.executeCustomeMethodForProperty(alfrescoORM, beanFactory);
-			ORMUtil.executeAssociation(alfrescoORM, beanFactory, serviceRegistry);
+			Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoContent);
+			ORMUtil.saveProperties(alfrescoContent, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
+			ORMUtil.executeCustomeMethodForProperty(alfrescoContent, beanFactory);
+			ORMUtil.executeAssociation(alfrescoContent, beanFactory, serviceRegistry);
 		} catch (IllegalArgumentException e)
 		{
 			throw new ORMException(e.getMessage(),e);
@@ -75,6 +76,9 @@ public class UpdateHelper
 		{
 			throw new ORMException(e.getMessage(),e);
 		} catch (InvocationTargetException e)
+		{
+			throw new ORMException(e.getMessage(),e);
+		} catch (InstantiationException e)
 		{
 			throw new ORMException(e.getMessage(),e);
 		}

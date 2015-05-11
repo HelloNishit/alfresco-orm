@@ -17,13 +17,14 @@
  */
 package com.alfresco.orm.vo;
 
+import com.alfresco.orm.AlfrescoORM;
 import com.alfresco.orm.annotation.AlfrescoQName;
 
 /**
  * @author Nishit C.
  *
  */
-public class SampleAspect
+public class SampleAspect implements AlfrescoORM
 {
 	@AlfrescoQName(localName = "sampleStringAspect", namespaceURI = "http://alfresco.orm.com")
 	private String	sampleStringAspect;

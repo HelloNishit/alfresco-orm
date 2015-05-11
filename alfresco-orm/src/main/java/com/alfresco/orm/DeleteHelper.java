@@ -19,6 +19,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.alfresco.orm.exception.ORMException;
+import com.alfresco.orm.mapping.AlfrescoContent;
 
 public class DeleteHelper
 {
@@ -47,9 +48,9 @@ public class DeleteHelper
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	public void delete(final AlfrescoORM alfrescoORM) throws ORMException
+	public void delete(final AlfrescoContent alfrescoContent) throws ORMException
 	{
-		NodeRef nodeRef = ORMUtil.getNodeRef(alfrescoORM);
+		NodeRef nodeRef = ORMUtil.getNodeRef(alfrescoContent);
 		serviceRegistry.getNodeService().deleteNode(nodeRef);
 	}
 

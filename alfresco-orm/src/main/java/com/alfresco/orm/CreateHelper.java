@@ -60,21 +60,21 @@ public class CreateHelper
 		this.serviceRegistry = serviceRegistry;
 	}
 
-	public void save(final AlfrescoORM alfrescoORM) throws ORMException
+	public void save(final AlfrescoContent alfrescoContent) throws ORMException
 	{
-		AlfrescoType alfrescoContent = alfrescoORM.getClass().getAnnotation(AlfrescoType.class);
-		AlfrescoQName alfrescoQName = alfrescoORM.getClass().getAnnotation(AlfrescoQName.class);
+		AlfrescoType alfrescoContentType = alfrescoContent.getClass().getAnnotation(AlfrescoType.class);
+		AlfrescoQName alfrescoQName = alfrescoContent.getClass().getAnnotation(AlfrescoQName.class);
 		try
 		{
-			NodeRef nodeRef = createContent(alfrescoContent, alfrescoQName, alfrescoORM);
+			NodeRef nodeRef = createContent(alfrescoContentType, alfrescoQName, alfrescoContent);
 			if (null != nodeRef)
 			{
-				AlfrescoContent alfrescoVO = (AlfrescoContent) alfrescoORM;
+				AlfrescoContent alfrescoVO = (AlfrescoContent) alfrescoContent;
 				alfrescoVO.setNodeUUID(nodeRef.getId());
-				Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoORM);
-				ORMUtil.saveProperties(alfrescoORM, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
-				ORMUtil.executeCustomeMethodForProperty(alfrescoORM, beanFactory);
-				ORMUtil.executeAssociation(alfrescoORM, beanFactory, serviceRegistry);
+				Map<QName, Serializable> properties = ORMUtil.getAlfrescoProperty(alfrescoContent);
+				ORMUtil.saveProperties(alfrescoContent, properties, serviceRegistry.getNodeService(), restrictedPropertiesForUpdate);
+				ORMUtil.executeCustomeMethodForProperty(alfrescoContent, beanFactory);
+				ORMUtil.executeAssociation(alfrescoContent, beanFactory, serviceRegistry);
 			}
 		} catch (SecurityException e)
 		{
@@ -91,11 +91,14 @@ public class CreateHelper
 		} catch (InvocationTargetException e)
 		{
 			throw new ORMException(e.getMessage(), e);
+		} catch (InstantiationException e)
+		{
+			throw new ORMException(e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * @param alfrescoContent
+	 * @param alfrescoContentType
 	 * @param nodeRef
 	 * @return
 	 * @throws ORMException
@@ -103,27 +106,27 @@ public class CreateHelper
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
 	 */
-	private NodeRef createContent(final AlfrescoType alfrescoContent, final AlfrescoQName alfrescoQName, final AlfrescoORM alfrescoORM)
+	private NodeRef createContent(final AlfrescoType alfrescoContentType, final AlfrescoQName alfrescoQName, final AlfrescoContent alfrescoContent)
 			throws ORMException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
 		NodeRef nodeRef = null;
-		if (StringUtils.isEmpty(alfrescoContent.getParentFolderMethodName()))
+		if (StringUtils.isEmpty(alfrescoContentType.getParentFolderMethodName()))
 		{
-			String createNodeMethodName = alfrescoContent.createNodeMethodName();
+			String createNodeMethodName = alfrescoContentType.createNodeMethodName();
 			if (StringUtils.isEmpty(createNodeMethodName))
 			{
 				throw new ORMException("Please spacifiy getParentFolderMethodName or  createNodeMethodName ");
 			} else
 			{
-				nodeRef = executeCreateNodeMethod(alfrescoContent, alfrescoORM);
+				nodeRef = executeCreateNodeMethod(alfrescoContentType, alfrescoContent);
 			}
 		} else
 		{
-			NodeRef parentNodeRef = executeGetParentContent(alfrescoContent, alfrescoORM);
+			NodeRef parentNodeRef = executeGetParentContent(alfrescoContentType, alfrescoContent);
 			if (null != parentNodeRef && getServiceRegistry().getNodeService().exists(parentNodeRef))
 			{
 				QName fileQName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
-				FileInfo fileInfo = getServiceRegistry().getFileFolderService().create(parentNodeRef, alfrescoORM.getName(), fileQName);
+				FileInfo fileInfo = getServiceRegistry().getFileFolderService().create(parentNodeRef, alfrescoContent.getName(), fileQName);
 				nodeRef = fileInfo.getNodeRef();
 			} else
 			{

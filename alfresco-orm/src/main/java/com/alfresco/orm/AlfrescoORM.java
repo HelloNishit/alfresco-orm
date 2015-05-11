@@ -21,48 +21,4 @@ package com.alfresco.orm;
  */
 public interface AlfrescoORM
 {
-
-	/**
-	 * @return the nodeUUID
-	 */
-	public String getNodeUUID();
-
-	/**
-	 * @return the nodeUUID
-	 */
-	public void setNodeUUID(String nodeUUID);
-
-	/**
-	 * @return the name
-	 */
-	public String getName();
-
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public void setName(String name);
-
-	/**
-	 * @return the title
-	 */
-	public String getTitle();
-
-	/**
-	 * @param title
-	 *            the title to set
-	 */
-	public void setTitle(String title);
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription();
-
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public void setDescription(String description);
-
 }

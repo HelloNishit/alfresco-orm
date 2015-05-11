@@ -23,6 +23,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.alfresco.orm.exception.ORMException;
+import com.alfresco.orm.mapping.AlfrescoContent;
 
 /**
  * 
@@ -48,22 +49,22 @@ public class Session
 		this.beanFactory = beanFactory;
 	}
 
-	public void save(final AlfrescoORM alfrescoORM) throws ORMException
+	public void save(final AlfrescoContent alfrescoORM) throws ORMException
 	{
 		createHelper.save(alfrescoORM);
 	}
 
-	public void update(final AlfrescoORM alfrescoORM) throws ORMException
+	public void update(final AlfrescoContent alfrescoORM) throws ORMException
 	{
 		updateHelper.update(alfrescoORM);
 	}
 
-	public void delete(final AlfrescoORM alfrescoORM) throws ORMException
+	public void delete(final AlfrescoContent alfrescoORM) throws ORMException
 	{
 		deleteHelper.delete(alfrescoORM);
 	}
 
-	public <T extends AlfrescoORM> List<T> fillObject(final List<NodeRef> nodeRefs, Class<T> classType, boolean isLazy) throws ORMException
+	public <T extends AlfrescoContent> List<T> fillObject(final List<NodeRef> nodeRefs, Class<T> classType, boolean isLazy) throws ORMException
 	{
 		List<T> retVAl = new ArrayList<T>();
 		T orm;

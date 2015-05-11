@@ -39,29 +39,36 @@ import com.alfresco.orm.annotation.AlfrescoQName;
 import com.alfresco.orm.annotation.SetProperty;
 import com.alfresco.orm.annotation.SpringBeanID;
 import com.alfresco.orm.exception.ORMException;
+import com.alfresco.orm.mapping.AlfrescoContent;
 import com.alfresco.orm.reflection.ReflectionUtil;
 
 public abstract class ORMUtil
 {
 	public static Map<QName, Serializable> getAlfrescoProperty(final AlfrescoORM alfrescoORM) throws IllegalArgumentException,
-			IllegalAccessException, SecurityException, NoSuchMethodException, InvocationTargetException
+			IllegalAccessException, SecurityException, NoSuchMethodException, InvocationTargetException, InstantiationException
 	{
 		List<Field> fields = new ArrayList<Field>();
 		ReflectionUtil.getFields(alfrescoORM.getClass(), fields);
 		Map<QName, Serializable> retVal = new HashMap<QName, Serializable>(fields.size());
 		for (Field field : fields)
 		{
-			if (field.isAnnotationPresent(AlfrescoQName.class) && !field.isAnnotationPresent(AlfrescoAssociation.class))
+			if (!field.isAnnotationPresent(SetProperty.class))
 			{
-				AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
-				QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
-				Method getterMethod = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());
-				retVal.put(qName, (Serializable) getterMethod.invoke(alfrescoORM));
-			} else if (field.isAnnotationPresent(AlfrescoAspect.class))
-			{
-				Method getterMethod = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());
-				AlfrescoORM aspect = (AlfrescoORM) getterMethod.invoke(alfrescoORM);
-				retVal.putAll(getAlfrescoProperty(aspect));
+				if (field.isAnnotationPresent(AlfrescoQName.class) && !field.isAnnotationPresent(AlfrescoAssociation.class))
+				{
+					AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
+					QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+					Method getterMethod = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());
+					retVal.put(qName, (Serializable) getterMethod.invoke(alfrescoORM));
+				} else if (field.isAnnotationPresent(AlfrescoAspect.class))
+				{
+					Method getterMethod = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());					
+					AlfrescoORM aspect = (AlfrescoORM) getterMethod.invoke(alfrescoORM) ;
+					if(null != aspect)
+					{
+						retVal.putAll(getAlfrescoProperty(aspect));
+					}
+				}
 			}
 		}
 		return retVal;
@@ -69,7 +76,7 @@ public abstract class ORMUtil
 
 	/**
 	 * 
-	 * @param alfrescoORM
+	 * @param alfrescoContent
 	 * @param properties
 	 * @param nodeService
 	 * @param restrictedPropertiesForUpdate
@@ -78,11 +85,11 @@ public abstract class ORMUtil
 	 * @throws InvocationTargetException
 	 * @throws ORMException
 	 */
-	public static void saveProperties(final AlfrescoORM alfrescoORM, final Map<QName, Serializable> properties, final NodeService nodeService,
+	public static void saveProperties(final AlfrescoContent alfrescoContent, final Map<QName, Serializable> properties, final NodeService nodeService,
 			final List<String> restrictedPropertiesForUpdate) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
 			ORMException
 	{
-		NodeRef nodeRef = getNodeRef(alfrescoORM);
+		NodeRef nodeRef = getNodeRef(alfrescoContent);
 		Map<QName, Serializable> propertiesFinal = new HashMap<QName, Serializable>(properties.size());
 		for (Entry<QName, Serializable> prop : properties.entrySet())
 		{
@@ -97,7 +104,7 @@ public abstract class ORMUtil
 
 	/**
 	 * 
-	 * @param alfrescoORM
+	 * @param alfrescoContent
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
 	 * @throws IllegalArgumentException
@@ -105,12 +112,12 @@ public abstract class ORMUtil
 	 * @throws InvocationTargetException
 	 * @throws ORMException
 	 */
-	public static void executeCustomeMethodForProperty(final AlfrescoORM alfrescoORM, final BeanFactory beanFactory) throws SecurityException,
+	public static void executeCustomeMethodForProperty(final AlfrescoContent alfrescoContent, final BeanFactory beanFactory) throws SecurityException,
 			NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, ORMException
 	{
-		NodeRef nodeRef = getNodeRef(alfrescoORM);
+		NodeRef nodeRef = getNodeRef(alfrescoContent);
 		List<Field> fields = new ArrayList<Field>();
-		ReflectionUtil.getFields(alfrescoORM.getClass(), fields);
+		ReflectionUtil.getFields(alfrescoContent.getClass(), fields);
 		for (Field field : fields)
 		{
 			if (field.isAnnotationPresent(SetProperty.class))
@@ -120,7 +127,7 @@ public abstract class ORMUtil
 				{
 					Object target = getTargetServiceBean(setProperty.springBeanID(), beanFactory);
 					Method customeMethod = target.getClass().getMethod(setProperty.setPropertMethodName(), NodeRef.class, AlfrescoORM.class);
-					customeMethod.invoke(target, nodeRef, alfrescoORM);
+					customeMethod.invoke(target, nodeRef, alfrescoContent);
 				} else
 				{
 					throw new ORMException("Please set cutome method name to set property");
@@ -129,12 +136,12 @@ public abstract class ORMUtil
 		}
 	}
 
-	public static void executeAssociation(final AlfrescoORM alfrescoORM, final BeanFactory beanFactory, final ServiceRegistry serviceRegistry)
+	public static void executeAssociation(final AlfrescoContent alfrescoContent, final BeanFactory beanFactory, final ServiceRegistry serviceRegistry)
 			throws ORMException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
-		NodeRef nodeRef = getNodeRef(alfrescoORM);
+		NodeRef nodeRef = getNodeRef(alfrescoContent);
 		List<Field> fields = new ArrayList<Field>();
-		ReflectionUtil.getFields(alfrescoORM.getClass(), fields);
+		ReflectionUtil.getFields(alfrescoContent.getClass(), fields);
 		for (Field field : fields)
 		{
 			if (field.isAnnotationPresent(AlfrescoAssociation.class))
@@ -142,10 +149,10 @@ public abstract class ORMUtil
 				AlfrescoQName alfrescoQName = field.getAnnotation(AlfrescoQName.class);
 				if (null == alfrescoQName)
 				{
-					throw new ORMException("please add alfresco quname aspect to the association");
+					throw new ORMException("please add alfresco quname aspect to the association field: " + field );
 				}
-				List<AlfrescoORM> associationAlfrescoORMs = getAsscoiationObject(alfrescoORM, field);
-				for (AlfrescoORM associationAlfrescoORM : associationAlfrescoORMs)
+				List<AlfrescoContent> associationAlfrescoORMs = getAsscoiationObject(alfrescoContent, field);
+				for (AlfrescoContent associationAlfrescoORM : associationAlfrescoORMs)
 				{
 					if (StringUtils.isNotBlank(associationAlfrescoORM.getNodeUUID()))
 					{
@@ -164,35 +171,36 @@ public abstract class ORMUtil
 	}
 
 	/**
-	 * @param alfrescoORM
+	 * @param alfrescoContent
 	 * @param field
 	 * @return
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
 	 */
-	private static List<AlfrescoORM> getAsscoiationObject(final AlfrescoORM alfrescoORM, final Field field) throws IllegalAccessException,
+	private static List<AlfrescoContent> getAsscoiationObject(final AlfrescoContent alfrescoContent, final Field field) throws IllegalAccessException,
 			InvocationTargetException
 	{
-		List<AlfrescoORM> retVal = new ArrayList<AlfrescoORM>();
+		List<AlfrescoContent> retVal = new ArrayList<AlfrescoContent>();
 		AlfrescoAssociation alfrescoAssociation = field.getAnnotation(AlfrescoAssociation.class);
-		Method method = ReflectionUtil.getMethod(alfrescoORM.getClass(), field.getName());
+		Method method = ReflectionUtil.getMethod(alfrescoContent.getClass(), field.getName());
 		if (alfrescoAssociation.many())
 		{
-			retVal.addAll((Collection<? extends AlfrescoORM>) method.invoke(alfrescoORM));
+			Collection<? extends AlfrescoContent> temp = (Collection<? extends AlfrescoContent>) method.invoke(alfrescoContent) ;
+			retVal.addAll(temp);
 		} else
 		{
-			retVal.add((AlfrescoORM) method.invoke(alfrescoORM));
+			retVal.add((AlfrescoContent) method.invoke(alfrescoContent));
 		}
 		return retVal;
 	}
 
 	/**
-	 * @param alfrescoORM
+	 * @param alfrescoContent
 	 * @return
 	 */
-	public static NodeRef getNodeRef(final AlfrescoORM alfrescoORM)
+	public static NodeRef getNodeRef(final AlfrescoContent alfrescoContent)
 	{
-		NodeRef nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, alfrescoORM.getNodeUUID());
+		NodeRef nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, alfrescoContent.getNodeUUID());
 		return nodeRef;
 	}
 
