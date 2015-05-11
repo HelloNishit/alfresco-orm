@@ -186,10 +186,17 @@ public abstract class ORMUtil
 		if (alfrescoAssociation.many())
 		{
 			Collection<? extends AlfrescoContent> temp = (Collection<? extends AlfrescoContent>) method.invoke(alfrescoContent) ;
-			retVal.addAll(temp);
+			if(null != temp)
+			{
+				retVal.addAll(temp);
+			}
 		} else
 		{
-			retVal.add((AlfrescoContent) method.invoke(alfrescoContent));
+			AlfrescoContent temp = (AlfrescoContent) method.invoke(alfrescoContent) ; 
+			if(null != temp)
+			{
+				retVal.add(temp);	
+			}			
 		}
 		return retVal;
 	}
