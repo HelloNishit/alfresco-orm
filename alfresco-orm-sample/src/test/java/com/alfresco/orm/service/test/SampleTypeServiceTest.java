@@ -58,29 +58,29 @@ import com.tradeshift.test.remote.RemoteTestRunner;
 public class SampleTypeServiceTest
 {
 
-	private static final String	ADMIN_USER_NAME	= "admin";
+	private static final String			ADMIN_USER_NAME	= "admin";
 
-	static Logger				log				= Logger.getLogger(SampleTypeServiceTest.class);
+	static Logger						log				= Logger.getLogger(SampleTypeServiceTest.class);
 
 	@Autowired
-	protected SampleTypeService	sampleTypeService;
-	
+	protected SampleTypeService			sampleTypeService;
+
 	@Autowired
-	protected SampleTypeServiceImplRepo sampleTypeServiceImplRepo ;
+	protected SampleTypeServiceImplRepo	sampleTypeServiceImplRepo;
 
 	@Autowired
 	@Qualifier("NodeService")
-	protected NodeService		nodeService;
+	protected NodeService				nodeService;
 
-	SampleTypeExample1			afterCreateObj	= null;
-	SampleTypeExample1			afterUpdateObj	= null;
-	SampleTypeExample1			afterSearchObj	= null;
+	SampleTypeExample1					afterCreateObj	= null;
+	SampleTypeExample1					afterUpdateObj	= null;
+	SampleTypeExample1					afterSearchObj	= null;
 
 	@Test
 	public void testWiring()
 	{
 		assertNotNull(sampleTypeService);
-		assertNotNull(sampleTypeServiceImplRepo);		
+		assertNotNull(sampleTypeServiceImplRepo);
 	}
 
 	@Test
@@ -126,26 +126,23 @@ public class SampleTypeServiceTest
 		sampleType2.setSampleString22("sampleType2->sampleString22");
 		sampleTypeExample1.setSampleType2(sampleType2);
 
-		//afterCreateObj = (SampleTypeExample1) sampleTypeService.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
-		afterCreateObj = (SampleTypeExample1) sampleTypeServiceImplRepo.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1)) ;
+		// afterCreateObj = (SampleTypeExample1)
+		// sampleTypeService.createSampleType(new
+		// ObjectMapper().writeValueAsString(sampleTypeExample1));
+		afterCreateObj = (SampleTypeExample1) sampleTypeServiceImplRepo.createSampleType(new ObjectMapper().writeValueAsString(sampleTypeExample1));
 		assertData(afterCreateObj);
-		testUpdateSampleType() ;
-		testFetchData() ;
+		testUpdateSampleType();
+		testFetchData();
 	}
 
-	
 	public void testUpdateSampleType() throws JsonGenerationException, JsonMappingException, IOException
 	{
 		afterCreateObj.setSampleString("update setSampleString");
-		afterCreateObj.getSampleType1().get(0).setSampleString11("update setSampleString11");
-		afterCreateObj.getSampleType1().get(1).setSampleString12("update setSampleString12");
-		afterCreateObj.getSampleType2().setSampleString22("update setSampleString22");
 		AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
 		afterUpdateObj = (SampleTypeExample1) sampleTypeService.updateSampleType(new ObjectMapper().writeValueAsString(afterCreateObj));
 		assertData(afterUpdateObj);
 	}
 
-	
 	public void testFetchData() throws JsonGenerationException, JsonMappingException, IOException
 	{
 		AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
@@ -165,6 +162,10 @@ public class SampleTypeServiceTest
 		// "http://alfresco.orm.com")
 		Assert.assertEquals(nodeService.getProperties(sampleTypeExample1NodeRef).get(QName.createQName("http://alfresco.orm.com", "sampleString")),
 				assertObject.getSampleString());
+
+		Assert.assertEquals(
+				nodeService.getProperties(sampleTypeExample1NodeRef).get(QName.createQName("http://alfresco.orm.com", "sampleStringAspect")),
+				assertObject.getSampleAspect().getSampleStringAspect());
 
 		// @AlfrescoQName(localName = "sampleString11", namespaceURI =
 		// "http://alfresco.orm.com")

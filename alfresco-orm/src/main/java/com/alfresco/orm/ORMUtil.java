@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -156,7 +157,32 @@ public abstract class ORMUtil
 				{
 					if (StringUtils.isNotBlank(associationAlfrescoORM.getNodeUUID()))
 					{
-						UpdateHelper.getUpdateHelper().update(associationAlfrescoORM);
+						// TODO: understand requirement and check that do we need to update pojo or just need to update association
+						//UpdateHelper.getUpdateHelper().update(associationAlfrescoORM);
+						NodeRef associationNodeRef = getNodeRef(associationAlfrescoORM);
+						QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+						List<AssociationRef> associationRefs = serviceRegistry.getNodeService().getTargetAssocs(nodeRef, qName) ;
+						
+						if(!associationRefs.isEmpty())
+						{
+							boolean doAdd = true ;
+							for(AssociationRef associationRef : associationRefs)
+							{
+								if(associationRef.getTargetRef().equals(associationNodeRef))
+								{
+									doAdd = false ;
+								}
+							}
+							if(doAdd)
+							{
+								serviceRegistry.getNodeService().createAssociation(nodeRef, associationNodeRef, qName);
+							}
+						}
+						else
+						{
+							serviceRegistry.getNodeService().createAssociation(nodeRef, associationNodeRef, qName);
+						}
+						
 					} else
 					{
 						CreateHelper.getCreateHelper().save(associationAlfrescoORM);

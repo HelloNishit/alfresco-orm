@@ -27,14 +27,9 @@ import org.aopalliance.intercept.MethodInvocation;
 public class AlfrescoRepositoryMethodInterceptor implements MethodInterceptor
 {
 	public Object invoke(MethodInvocation invocation) throws Throwable
-	{
-		System.out.println("--------------->" + invocation.getThis().getClass().getTypeParameters()[0].getName()) ;
-		System.out.println("--------------->" + invocation.getThis().getClass().getTypeParameters()[0].getClass()) ;
-		System.out.println("--------------->" + invocation.getThis().getClass().getTypeParameters()[0].getGenericDeclaration()) ;
-		System.out.println("--------------->" +invocation.getMethod()) ;
+	{	
 		if(invocation.getMethod().getName().equals("myMethod"))
 		{
-			System.out.println("this is working and myMethod call");
 			return null ;
 		}
 

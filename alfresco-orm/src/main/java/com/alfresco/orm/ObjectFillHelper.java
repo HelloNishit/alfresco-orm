@@ -120,11 +120,20 @@ public class ObjectFillHelper
 				Class<?> classType = setterMethod.getParameterTypes()[0];
 				try
 				{
-					getFilledObject(nodeRef, (AlfrescoORM) classType.newInstance(),isLazy);
+					AlfrescoORM alfrescoORMAspect = (AlfrescoORM) classType.newInstance() ;
+					// setting the aspect to pojo
+					setterMethod.invoke(alfrescoORM, alfrescoORMAspect) ;
+					getFilledObject(nodeRef,alfrescoORMAspect ,isLazy);
 				} catch (InstantiationException e)
 				{
 					throw new ORMException(e.getMessage() + "class type: " + classType, e);
 				} catch (IllegalAccessException e)
+				{
+					throw new ORMException(e.getMessage() + "class type: " + classType, e);
+				} catch (IllegalArgumentException e)
+				{
+					throw new ORMException(e.getMessage() + "class type: " + classType, e);
+				} catch (InvocationTargetException e)
 				{
 					throw new ORMException(e.getMessage() + "class type: " + classType, e);
 				}

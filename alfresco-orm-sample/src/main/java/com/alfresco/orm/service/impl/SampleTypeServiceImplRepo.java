@@ -54,32 +54,7 @@ public class SampleTypeServiceImplRepo
 		return getCompanyHome();
 	}
 	
-	public static void main(String args[])
-	{	
-//		//Class<T> typeOfT = (Class<T>)((ParameterizedType)clasz.getGenericSuperclass()).getActualTypeArguments()[0];
-//		System.out.println(((sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl)SampleTypeServiceRepo.class.getGenericInterfaces())[0].getClass());
-		
-		for(Type type : SampleTypeServiceRepo.class.getGenericInterfaces())
-		{
-			if (type instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) type;
-                System.out.println("Return type is " + pt.getRawType() + " with the following type arguments: ");
-                
-                for (Type t : pt.getActualTypeArguments()) {
-                    System.out.println(t + " ");
-                    
-                    Class c = (Class) t ; 
-                    System.out.println(c.getName());
-                }
-            }
-            else {
-                System.out.println("Return type is " + type);
-            }
-		}
-		
-		
-	}
-
+	
 	/**
 	 * @return the nodeService
 	 */
