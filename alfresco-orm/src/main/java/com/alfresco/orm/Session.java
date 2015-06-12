@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.alfresco.orm.exception.ORMException;
@@ -32,6 +34,7 @@ import com.alfresco.orm.mapping.AlfrescoContent;
  */
 public class Session
 {
+	public static final Log		LOGGER	= LogFactory.getLog(Session.class);
 	private BeanFactory			beanFactory;
 	private ServiceRegistry		serviceRegistry;
 	private CreateHelper		createHelper;
@@ -48,33 +51,47 @@ public class Session
 		this.serviceRegistry = serviceRegistry;
 		this.beanFactory = beanFactory;
 	}
+	
+	private String logData(AlfrescoContent alfrescoORM)
+	{
+		return "NodeUUID: " + alfrescoORM.getNodeUUID() + " Name: " + alfrescoORM.getName() ;
+	}
 
 	public void save(final AlfrescoContent alfrescoORM) throws ORMException
 	{
+		LOGGER.debug("save start " + logData(alfrescoORM));
 		createHelper.save(alfrescoORM);
+		LOGGER.debug("save end " + logData(alfrescoORM));
 	}
 
 	public void update(final AlfrescoContent alfrescoORM) throws ORMException
 	{
+		LOGGER.debug("update start " + logData(alfrescoORM));
 		updateHelper.update(alfrescoORM);
+		LOGGER.debug("update end " + logData(alfrescoORM));
 	}
 
 	public void delete(final AlfrescoContent alfrescoORM) throws ORMException
 	{
+		LOGGER.debug("delete start " + logData(alfrescoORM));
 		deleteHelper.delete(alfrescoORM);
+		LOGGER.debug("delete start " + logData(alfrescoORM));
 	}
 
 	public <T extends AlfrescoContent> List<T> fillObject(final List<NodeRef> nodeRefs, Class<T> classType, boolean isLazy) throws ORMException
 	{
+		LOGGER.debug("fillObject start number of data fetch count is " + nodeRefs.size() );
 		List<T> retVAl = new ArrayList<T>();
 		T orm;
 		try
 		{
 			for (NodeRef nodeRef : nodeRefs)
 			{
+				LOGGER.debug("fillObject start for noderef:"+nodeRef) ;
 				orm = classType.newInstance();
 				objectFillHelper.getFilledObject(nodeRef, orm, isLazy);
 				retVAl.add(orm);
+				LOGGER.debug("fillObject end for noderef:"+nodeRef) ;
 			}
 		} catch (InstantiationException e)
 		{
@@ -83,6 +100,7 @@ public class Session
 		{
 			throw new ORMException(e.getMessage(), e);
 		}
+		LOGGER.debug("fillObject end ");
 		return retVAl;
 	}
 
