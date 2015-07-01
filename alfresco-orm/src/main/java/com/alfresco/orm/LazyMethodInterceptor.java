@@ -33,14 +33,15 @@ public class LazyMethodInterceptor implements MethodInterceptor
 
 	public Object invoke(MethodInvocation invocation) throws Throwable
 	{	
-		if(isLoaded)
+		Object retObject = invocation.proceed();
+		if(!isLoaded && null == retObject)
 		{
 			AlfrescoContent alfrescoContent = (AlfrescoContent) invocation.getThis();
 			NodeRef nodeRef = ORMUtil.getNodeRef(alfrescoContent);
 			ObjectFillHelper.getObjectFillHelper().getFilledObject(nodeRef, alfrescoContent, true);
-		}
-		Object retObject = invocation.proceed();
-		isLoaded = true;
+			isLoaded = true;
+			retObject = invocation.proceed();
+		}		
 		return retObject;
 	}
 

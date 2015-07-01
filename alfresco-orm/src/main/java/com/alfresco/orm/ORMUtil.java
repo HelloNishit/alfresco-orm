@@ -153,14 +153,15 @@ public abstract class ORMUtil
 					throw new ORMException("please add alfresco quname aspect to the association field: " + field );
 				}
 				List<AlfrescoContent> associationAlfrescoORMs = getAsscoiationObject(alfrescoContent, field);
+				QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+				removeAllAssociation(serviceRegistry,nodeRef,qName) ;
 				for (AlfrescoContent associationAlfrescoORM : associationAlfrescoORMs)
 				{
 					if (StringUtils.isNotBlank(associationAlfrescoORM.getNodeUUID()))
 					{
 						// TODO: understand requirement and check that do we need to update pojo or just need to update association
 						//UpdateHelper.getUpdateHelper().update(associationAlfrescoORM);
-						NodeRef associationNodeRef = getNodeRef(associationAlfrescoORM);
-						QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
+						NodeRef associationNodeRef = getNodeRef(associationAlfrescoORM);						
 						List<AssociationRef> associationRefs = serviceRegistry.getNodeService().getTargetAssocs(nodeRef, qName) ;
 						
 						if(!associationRefs.isEmpty())
@@ -187,13 +188,27 @@ public abstract class ORMUtil
 					{
 						CreateHelper.getCreateHelper().save(associationAlfrescoORM);
 						NodeRef associationNodeRef = getNodeRef(associationAlfrescoORM);
-						QName qName = QName.createQName(alfrescoQName.namespaceURI(), alfrescoQName.localName());
 						serviceRegistry.getNodeService().createAssociation(nodeRef, associationNodeRef, qName);
 					}
 				}
 
 			}
 		}
+	}
+
+	/**
+	 * Method to remove all association for QName from the noderef
+	 * @param serviceRegistry
+	 * @param nodeRef
+	 * @param qName
+	 */
+	private static void removeAllAssociation(ServiceRegistry serviceRegistry,NodeRef nodeRef,QName qName)
+	{
+		List<AssociationRef> associationRefs = serviceRegistry.getNodeService().getTargetAssocs(nodeRef, qName) ;
+		for(AssociationRef associationRef : associationRefs)
+		{
+			serviceRegistry.getNodeService().removeAssociation(nodeRef, associationRef.getTargetRef(), qName);
+		}		
 	}
 
 	/**
